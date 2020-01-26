@@ -1,6 +1,6 @@
 #include "button.hpp"
 
-Button::Button(sf::Vector2f position, sf::Vector2i size, std::string text)
+Button::Button(sf::Vector2f position, sf::Vector2i size, std::string text, int characterSize)
 {
     m_position = position;
     m_size = size;
@@ -8,6 +8,7 @@ Button::Button(sf::Vector2f position, sf::Vector2i size, std::string text)
     m_font.loadFromFile("static/Aller_Rg.ttf");
     m_text.setFont(m_font);
     m_text.setString(text);
+    m_text.setCharacterSize(characterSize);
     m_text.setColor(sf::Color(255, 242, 230));
 
     sf::FloatRect textRect = m_text.getLocalBounds();

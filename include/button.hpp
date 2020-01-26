@@ -6,7 +6,7 @@
 class Button
 {
 public:
-    Button(sf::Vector2f position, sf::Vector2i size, std::string text);
+    Button(sf::Vector2f position, sf::Vector2i size, std::string text, int characterSize);
     ~Button();
 
     bool check(sf::Vector2i mousePosition);

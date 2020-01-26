@@ -25,26 +25,28 @@ private:
     void draw();
     void processEvents();
 
-    sf::RenderWindow* window;
+    Game* game;
 
-    size_t windowHeight;
-    size_t windowWidth;
+    sf::RenderWindow* m_window;
 
-    Button* startButton;
-    Button* optionButton;
-    Button* exitButton;
+    size_t m_windowHeight;
+    size_t m_windowWidth;
 
-    sf::Texture logoTexture;
-    sf::Sprite logoSprite;
+    Button* m_startButton;
+    Button* m_optionButton;
+    Button* m_exitButton;
+
+    sf::Texture m_logoTexture;
+    sf::Sprite m_logoSprite;
 
     //Option vars
-    Button* playersButtons[4][2]; //[0] - name buton [1] - switch box
-    Player* players[4];
-    Button* exitOptionButton;
-    sf::Text* titleOptions;
-    sf::Font font;
+    Button* m_playersButtons[4][2]; //[0] - name buton [1] - switch box
+    Player* m_players[4];
+    Button* m_exitOptionButton;
+    sf::Text* m_titleOptions;
+    sf::Font m_font;
 
 
-    bool exit_menu;
-    bool options_activate;
+    bool m_exitMenu;
+    bool m_optionsActivate;
 };

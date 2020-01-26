@@ -22,20 +22,10 @@ private:
     void processEvents();
     void update(float deltaTime);
 
-    void initGameplay(const std::string & lvlPath);
+    sf::RenderWindow* m_window;
 
-    sf::RenderWindow* window;
+    sf::Texture m_boardTexture;
+    sf::Sprite m_boardSprite;
 
-    size_t windowHeight;
-    size_t windowWidth;
-
-    Button* startButton;
-    Button* optionButton;
-    Button* exitButton;
-
-
-
-
-    bool exit_menu;
-    bool options_activate;
+    bool m_exitGame;
 };
