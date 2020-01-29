@@ -43,8 +43,7 @@ private:
     Button* m_playersButtons[4][2]; //[0] - name buton [1] - switch box
     Player* m_players[4];
     Button* m_exitOptionButton;
-    sf::Text* m_titleOptions;
-    sf::Font m_font;
+    Textbox* m_titleOptions;
 
 
     bool m_exitMenu;

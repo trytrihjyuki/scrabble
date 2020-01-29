@@ -18,8 +18,8 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     m_boardSprite.setPosition(sf::Vector2f(m_window->getSize().x / 2.f - (m_boardTexture.getSize().x * m_boardSprite.getScale().x) / 2.f, m_window->getSize().y / 10.f - 70));
 
     /*Score table*/
-    m_scoreHeader = new Button(sf::Vector2f(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f), "SCORES:",40);
-    for(int i=0; i<4; i++) m_scoreTable[i] = new Button(sf::Vector2f(m_window->getSize().x / 20.f, m_window->getSize().y / 7.f + (i+1)*60), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f), m_players[i]->getName() + ":\t\t" + std::to_string(m_players[i]->getScore()),30);
+    m_scoreHeader = new Textbox(sf::Vector2f(m_window->getSize().x / 15.f, m_window->getSize().y / 7.f), sf::Vector2i(m_window->getSize().x / 20.f, m_window->getSize().y / 7.f), "SCORES:",40);
+    for(int i=0; i<4; i++) m_scoreTable[i][0] = new Textbox(sf::Vector2f(m_window->getSize().x / 20.f, m_window->getSize().y / 7.f + (i+1)*60), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f), m_players[i]->getName() + ":\t\t" + std::to_string(m_players[i]->getScore()),30);
 
 
 
@@ -48,7 +48,7 @@ void Game::draw()
 
     /* Draw score table */
     m_window->draw(*m_scoreHeader->getTextPointer());
-    for(int i=0; i<4; i++) m_window->draw(*m_scoreTable[i]->getTextPointer());
+    for(int i=0; i<4; i++) m_window->draw(*m_scoreTable[i][0]->getTextPointer());
 
     m_window->display();
 }

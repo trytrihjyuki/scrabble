@@ -9,6 +9,7 @@
 #include<SFML/Audio.hpp>
 #include<SFML/Network.hpp>
 
+#include"textbox.hpp"
 #include"button.hpp"
 #include"player.hpp"
 
@@ -28,8 +29,8 @@ private:
     sf::Texture m_boardTexture;
     sf::Sprite m_boardSprite;
     Player* m_players[4];
-    Button* m_scoreHeader;
-    Button* m_scoreTable[4];
+    Textbox* m_scoreHeader;
+    Textbox* m_scoreTable[4][2];
     sf::Font m_font;
 
     bool m_exitGame;

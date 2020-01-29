@@ -10,8 +10,6 @@ Menu::Menu(size_t width, size_t height)
     m_window->create(sf::VideoMode(static_cast<int>(m_windowWidth), static_cast<int>(m_windowHeight)), "scrabble", sf::Style::Close);
     m_window->setFramerateLimit(60);
 
-    m_font.loadFromFile("static/Aller_Rg.ttf");
-
     m_startButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 2.3f - 50), sf::Vector2i(300, 75.f),"START",40);
     m_optionButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 1.7f - 50), sf::Vector2i(300, 75.f), "OPTIONS",40);
     m_exitButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 1.7f + 200 - 50), sf::Vector2i(300, 75.f), "EXIT",40);
@@ -24,17 +22,7 @@ Menu::Menu(size_t width, size_t height)
     }
     m_exitOptionButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 1.7f + 200 - 50), sf::Vector2i(300, 75.f), "GO BACK",40);
 
-
-
-    m_titleOptions = new sf::Text();
-    m_titleOptions->setString("SET PLAYERS NAMES AND TYPES");
-    m_titleOptions->setFont(m_font);
-    m_titleOptions->setCharacterSize(50);
-    m_titleOptions->setColor(sf::Color(255, 242, 230));
-
-    sf::FloatRect textRect = m_titleOptions->getLocalBounds();
-    m_titleOptions->setOrigin(textRect.left + textRect.width / 2.f,0);
-    m_titleOptions->setPosition(sf::Vector2f((m_window->getSize().x / 2.f), m_window->getSize().y / 7.f));
+    m_titleOptions = new Textbox(sf::Vector2f(sf::Vector2f(m_window->getSize().x / 2.5f, m_window->getSize().y / 7.f)), sf::Vector2i(300, 75.f), "SET PLAYERS NAMES AND TYPES",50);
 
     m_logoTexture.loadFromFile("static/title_logo.png");
     m_logoTexture.setSmooth(true);
@@ -46,7 +34,6 @@ Menu::Menu(size_t width, size_t height)
 
 Menu::~Menu()
 {
-
 }
 
 void Menu::run()
@@ -66,7 +53,7 @@ void Menu::draw()
     m_window->clear(sf::Color(0, 99, 64));
     if(m_optionsActivate)
     {
-        m_window->draw(*m_titleOptions);
+        m_window->draw(*m_titleOptions->getTextPointer());
         m_window->draw(*m_exitOptionButton->getTextPointer());
         for (int i = 0; i < 4; i++){
             m_window->draw(*m_playersButtons[i][0]->getTextPointer());
