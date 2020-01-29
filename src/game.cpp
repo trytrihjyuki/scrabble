@@ -3,15 +3,25 @@
 using namespace std;
 
 
-Game::Game(sf::RenderWindow *window)
+Game::Game(sf::RenderWindow *window,Player* players[4])
 {
     m_window = window;
+    for(int i=0; i<4; i++) m_players[i] = players[i];
 
+    m_font.loadFromFile("static/Aller_Rg.ttf");
+
+    /*Board*/
     m_boardTexture.loadFromFile("static/plansza.png");
     m_boardTexture.setSmooth(true);
     m_boardSprite.setTexture(m_boardTexture);
     m_boardSprite.setScale(sf::Vector2f((float)m_window->getSize().y / (float)m_boardTexture.getSize().y / 1.4f, (float)m_window->getSize().y / (float)m_boardTexture.getSize().y / 1.4f));
     m_boardSprite.setPosition(sf::Vector2f(m_window->getSize().x / 2.f - (m_boardTexture.getSize().x * m_boardSprite.getScale().x) / 2.f, m_window->getSize().y / 10.f - 70));
+
+    /*Score table*/
+    m_scoreHeader = new Button(sf::Vector2f(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f), "SCORES:",40);
+    for(int i=0; i<4; i++) m_scoreTable[i] = new Button(sf::Vector2f(m_window->getSize().x / 20.f, m_window->getSize().y / 7.f + (i+1)*60), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f), m_players[i]->getName() + ":\t\t" + std::to_string(m_players[i]->getScore()),30);
+
+
 
 }
 
@@ -23,7 +33,6 @@ Game::~Game()
 void Game::run()
 {
     m_exitGame = false;
-
     while (!m_exitGame)
     {
         draw();
@@ -36,6 +45,10 @@ void Game::draw()
     m_window->clear(sf::Color(0, 99, 64));
 
     m_window->draw(m_boardSprite);
+
+    /* Draw score table */
+    m_window->draw(*m_scoreHeader->getTextPointer());
+    for(int i=0; i<4; i++) m_window->draw(*m_scoreTable[i]->getTextPointer());
 
     m_window->display();
 }

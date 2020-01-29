@@ -1,6 +1,7 @@
 #include<iostream>
 #include<vector>
 #include<queue>
+#include<string>
 
 #include<SFML/Graphics.hpp>
 #include<SFML/System.hpp>
@@ -13,7 +14,7 @@
 
 class Game{
 public:
-    Game(sf::RenderWindow* window);
+    Game(sf::RenderWindow* window,Player* players[4]);
     ~Game();
     void run();
 
@@ -26,6 +27,10 @@ private:
 
     sf::Texture m_boardTexture;
     sf::Sprite m_boardSprite;
+    Player* m_players[4];
+    Button* m_scoreHeader;
+    Button* m_scoreTable[4];
+    sf::Font m_font;
 
     bool m_exitGame;
 };

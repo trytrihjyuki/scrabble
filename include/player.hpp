@@ -18,6 +18,10 @@ public:
     Player(std::string);
     ~Player();
 
+    bool getActivate();
+
+    void setActivate(bool activate);
+
     bool getHuman();
 
     void setHuman(bool human);
@@ -26,9 +30,13 @@ public:
 
     void setName(std::string name);
 
+    int getScore();
+
+    void setScore(int Score);
 private:
     std::string m_name;
     char m_letters[7];
-    int currentScore;
-    bool m_human; // 1 if yes
+    int m_score;
+    bool m_human;
+    bool m_activate;
 };
