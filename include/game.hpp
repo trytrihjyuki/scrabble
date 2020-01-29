@@ -31,6 +31,11 @@ private:
     sf::Texture m_boardTexture;
     sf::Sprite m_boardSprite;
 
+
+    Textbox* testLetter;
+    Textbox* testLetterx;
+    Textbox* testLettery;
+
     Textbox* m_scoreHeader;
     Textbox* m_scoreTable[4][2];
 

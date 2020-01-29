@@ -76,6 +76,16 @@ void Menu::processEvents()
     sf::Event event;
     sf::Vector2f mouse = sf::Vector2f(sf::Mouse::getPosition(*m_window).x, sf::Mouse::getPosition(*m_window).y);
 
+    /* Debug */
+                printf("[+] Starting game\n");
+                game = new Game(m_window, m_players);
+                game->run();
+                printf("[+] Ending game\n");
+                delete game;
+                return;
+    /* End of debug */
+
+
     while (m_window->pollEvent(event))
     {
         if(event.type == sf::Event::Closed)
@@ -84,7 +94,7 @@ void Menu::processEvents()
             printf("[+] Exit menu\n");
             break;
         }
-        if(event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) //Do not take input after click out of box
+        if(event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) /*Do not take input after click out of box */
         {
             for (int i = 0; i < 4; i++){
                 m_playersButtons[i][0]->update(sf::Mouse::getPosition(*m_window), false);
@@ -99,7 +109,7 @@ void Menu::processEvents()
                 m_exitOptionButton->update(sf::Mouse::getPosition(*m_window), false);
                 if(m_exitOptionButton->getTextPointer()->getGlobalBounds().contains(mouse))
                     m_optionsActivate = false;
-                //Activation of input names
+                /* Activation of input names */
                 for(int i = 0; i < 4; i++){
                     m_playersButtons[i][0]->update(sf::Mouse::getPosition(*m_window), true);
                     m_playersButtons[i][1]->update(sf::Mouse::getPosition(*m_window), true);
@@ -112,7 +122,7 @@ void Menu::processEvents()
                     }
                 }
             }
-            if (event.type == sf::Event::TextEntered)
+            if (event.type == sf::Event::TextEntered) /* Typing players names */
             {
                 for(int i = 0; i < 4; i++){
                     if(m_playersButtons[i][0]->isPressed()){
@@ -123,7 +133,7 @@ void Menu::processEvents()
                                 m_players[i]->setName(temp);
                             }
                         }
-                        else
+                        else if(m_players[i]->getName().size() < 12)
                             m_players[i]->setName(m_players[i]->getName()+(char)event.text.unicode);
 
                         m_playersButtons[i][0]->updateText(m_players[i]->getName());
