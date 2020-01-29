@@ -26,12 +26,15 @@ private:
 
     sf::RenderWindow* m_window;
 
+    std::vector <Player*> m_players;
+
     sf::Texture m_boardTexture;
     sf::Sprite m_boardSprite;
-    Player* m_players[4];
+
     Textbox* m_scoreHeader;
     Textbox* m_scoreTable[4][2];
-    sf::Font m_font;
 
     bool m_exitGame;
+
+    int m_playersNumber;
 };
