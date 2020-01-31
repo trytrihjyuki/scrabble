@@ -12,6 +12,7 @@
 #include"textbox.hpp"
 #include"button.hpp"
 #include"player.hpp"
+#include"board.hpp"
 
 class Game{
 public:
@@ -31,11 +32,7 @@ private:
     sf::Sprite m_boardSprite;
 
     Textbox* m_boardLetters[15][15];
-
-
-    Textbox* testLetter;
-    Textbox* testLetterx;
-    Textbox* testLettery;
+    Board* m_board;
 
     Textbox* m_scoreHeader;
     Textbox* m_scoreTable[4][2];

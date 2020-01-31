@@ -4,9 +4,11 @@
 Game::Game(sf::RenderWindow *window,Player* players[4])
 {
     m_window = window;
-    for(int i=0; i<4; i++) if(players[i]->getActivate()) m_players.push_back(players[i]);
 
+    for(int i=0; i<4; i++) if(players[i]->getActivate()) m_players.push_back(players[i]);
     m_playersNumber = m_players.size();
+
+    m_board = new Board();
 
     /*Board*/
     m_boardTexture.loadFromFile("static/plansza.png");
@@ -21,17 +23,10 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     for(int i=0; i<4; i++) m_scoreTable[i][1] = new Textbox(sf::Vector2f(m_window->getSize().x / 6.4f, m_window->getSize().y / 7.f + (i+1)*60), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f), std::to_string(m_players[i]->getScore()),30);
 
     /*Test letter*/
-    testLetter = new Textbox(sf::Vector2f(m_window->getSize().x / 3.871f, m_window->getSize().y / 36.f), sf::Vector2i(m_window->getSize().x / 29.75f, m_window->getSize().y / 20.145f),"",0);
-    testLetterx = new Textbox(sf::Vector2f(m_window->getSize().x / 3.871f + m_window->getSize().x / 30.8f, m_window->getSize().y / 36.f), sf::Vector2i(m_window->getSize().x / 29.75f, m_window->getSize().y / 20.145f),"",0);
-    testLettery = new Textbox(sf::Vector2f(m_window->getSize().x / 3.871f, m_window->getSize().y / 36.f + m_window->getSize().y / 21.5f), sf::Vector2i(m_window->getSize().x / 29.75f, m_window->getSize().y / 20.145f),"",0);
-    testLetterx->setImage("static/letters/pl/Ę.png");
-    testLettery->setImage("static/letters/pl/Ź.png");
-    testLetter->setImage("static/letters/pl/Ć.png");
-
     srand(time(NULL));
     for(int i=0; i<15; i++){
         for(int j=0; j<15; j++){
-            if(rand()%2){
+            if(rand()%2 && false){
                 m_boardLetters[i][j] = new Textbox(sf::Vector2f(m_window->getSize().x / 3.871f + i*m_window->getSize().x / 31.15f, m_window->getSize().y / 36.f + j*m_window->getSize().y / 21.12f), sf::Vector2i(m_window->getSize().x / 29.75f, m_window->getSize().y / 20.145f),"",0);
                 m_boardLetters[i][j]->setImage("static/letters/pl/Ć.png");
             }
@@ -39,6 +34,7 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
         }
     }
     /* End of debug */
+
 
 
 }
@@ -66,9 +62,6 @@ void Game::draw()
     m_window->draw(m_boardSprite);
 
     /* Debug letters */
-    m_window->draw(*testLetter->getSpritePointer());
-    m_window->draw(*testLettery->getSpritePointer());
-    m_window->draw(*testLetterx->getSpritePointer());
     for(int i=0; i<15; i++){
         for(int j=0; j<15; j++){
             if(m_boardLetters[i][j]) m_window->draw(*m_boardLetters[i][j]->getSpritePointer());

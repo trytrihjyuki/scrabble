@@ -25,4 +25,4 @@ private:
     int m_letterBonus[15][15];
     int m_wordBonus[15][15];
 
-}
+};
