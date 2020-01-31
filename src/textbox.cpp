@@ -47,7 +47,5 @@ void Textbox::setImage(std::string Texture_src)
 
     m_Sprite.setTexture(m_Texture);
 
-    // m_Sprite.setScale(sf::Vector2f((float)m_size.x / (float)m_Texture.getSize().x, (float)m_size.y / (float)m_Texture.getSize().y));
-
     m_Sprite.setPosition(m_position);
 }

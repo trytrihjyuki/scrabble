@@ -12,13 +12,17 @@
 
 #include"textbox.hpp"
 
+
+#define VERTICAL 1
+#define HORIZONTAL 0
+
 class Board
 {
 public:
     Board();
     ~Board();
 
-    int addWord(int x, int y, std::string word);
+    int addWord(int x, int y, std::string word, bool orientation, sf::RenderWindow* window);
 
 private:
     Textbox* m_letters[15][15];

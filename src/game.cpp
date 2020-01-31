@@ -26,7 +26,7 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     srand(time(NULL));
     for(int i=0; i<15; i++){
         for(int j=0; j<15; j++){
-            if(rand()%2 && false){
+            if(rand()%2){
                 m_boardLetters[i][j] = new Textbox(sf::Vector2f(m_window->getSize().x / 3.871f + i*m_window->getSize().x / 31.15f, m_window->getSize().y / 36.f + j*m_window->getSize().y / 21.12f), sf::Vector2i(m_window->getSize().x / 29.75f, m_window->getSize().y / 20.145f),"",0);
                 m_boardLetters[i][j]->setImage("static/letters/pl/Ć.png");
             }
