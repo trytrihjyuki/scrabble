@@ -77,12 +77,12 @@ void Menu::processEvents()
     sf::Vector2f mouse = sf::Vector2f(sf::Mouse::getPosition(*m_window).x, sf::Mouse::getPosition(*m_window).y);
 
     /* Debug */
-                printf("[+] Starting game\n");
-                game = new Game(m_window, m_players);
-                game->run();
-                printf("[+] Ending game\n");
-                delete game;
-                return;
+    printf("[+] Starting game\n");
+    game = new Game(m_window, m_players);
+    game->run();
+    printf("[+] Ending game\n");
+    delete game;
+    return;
     /* End of debug */
 
 

@@ -1,7 +1,5 @@
 #include"game.hpp"
 
-using namespace std;
-
 
 Game::Game(sf::RenderWindow *window,Player* players[4])
 {
@@ -30,6 +28,18 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     testLettery->setImage("static/letters/pl/Ź.png");
     testLetter->setImage("static/letters/pl/Ć.png");
 
+    srand(time(NULL));
+    for(int i=0; i<15; i++){
+        for(int j=0; j<15; j++){
+            if(rand()%2){
+                m_boardLetters[i][j] = new Textbox(sf::Vector2f(m_window->getSize().x / 3.871f + i*m_window->getSize().x / 31.15f, m_window->getSize().y / 36.f + j*m_window->getSize().y / 21.12f), sf::Vector2i(m_window->getSize().x / 29.75f, m_window->getSize().y / 20.145f),"",0);
+                m_boardLetters[i][j]->setImage("static/letters/pl/Ć.png");
+            }
+            else m_boardLetters[i][j] = NULL;
+        }
+    }
+    /* End of debug */
+
 
 }
 
@@ -50,14 +60,20 @@ void Game::run()
 
 void Game::draw()
 {
+    /* Draw board and BG */
     m_window->clear(sf::Color(0, 99, 64));
 
     m_window->draw(m_boardSprite);
 
+    /* Debug letters */
     m_window->draw(*testLetter->getSpritePointer());
     m_window->draw(*testLettery->getSpritePointer());
     m_window->draw(*testLetterx->getSpritePointer());
-
+    for(int i=0; i<15; i++){
+        for(int j=0; j<15; j++){
+            if(m_boardLetters[i][j]) m_window->draw(*m_boardLetters[i][j]->getSpritePointer());
+        }
+    }
     /* Draw score table */
     m_window->draw(*m_scoreHeader->getTextPointer());
     for(int i=0; i<4; i++) m_window->draw(*m_scoreTable[i][0]->getTextPointer());

@@ -22,7 +22,6 @@ public:
 private:
     void draw();
     void processEvents();
-    void update(float deltaTime);
 
     sf::RenderWindow* m_window;
 
@@ -30,6 +29,8 @@ private:
 
     sf::Texture m_boardTexture;
     sf::Sprite m_boardSprite;
+
+    Textbox* m_boardLetters[15][15];
 
 
     Textbox* testLetter;
