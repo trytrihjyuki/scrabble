@@ -19,12 +19,17 @@
 class Board
 {
 public:
-    Board();
+    Board(sf::RenderWindow* window);
     ~Board();
 
     int addWord(int x, int y, std::string word, bool orientation, sf::RenderWindow* window);
 
+    void draw(sf::RenderWindow* window);
+
 private:
+    sf::Texture m_boardTexture;
+    sf::Sprite m_boardSprite;
+
     Textbox* m_letters[15][15];
     int m_letterBonus[15][15];
     int m_wordBonus[15][15];

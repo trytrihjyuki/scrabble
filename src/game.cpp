@@ -8,14 +8,7 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     for(int i=0; i<4; i++) if(players[i]->getActivate()) m_players.push_back(players[i]);
     m_playersNumber = m_players.size();
 
-    m_board = new Board();
-
-    /*Board*/
-    m_boardTexture.loadFromFile("static/plansza.png");
-    m_boardTexture.setSmooth(true);
-    m_boardSprite.setTexture(m_boardTexture);
-    m_boardSprite.setScale(sf::Vector2f((float)m_window->getSize().y / (float)m_boardTexture.getSize().y / 1.4f, (float)m_window->getSize().y / (float)m_boardTexture.getSize().y / 1.4f));
-    m_boardSprite.setPosition(sf::Vector2f(m_window->getSize().x / 2.f - (m_boardTexture.getSize().x * m_boardSprite.getScale().x) / 2.f, m_window->getSize().y / 10.f - 70));
+    m_board = new Board(m_window);
 
     /*Score table*/
     m_scoreHeader = new Textbox(sf::Vector2f(m_window->getSize().x / 13.f, m_window->getSize().y / 7.f), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f), "SCORES:",40);
@@ -23,20 +16,18 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     for(int i=0; i<4; i++) m_scoreTable[i][1] = new Textbox(sf::Vector2f(m_window->getSize().x / 6.4f, m_window->getSize().y / 7.f + (i+1)*60), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f), std::to_string(m_players[i]->getScore()),30);
 
     /*Test letter*/
-    srand(time(NULL));
-    for(int i=0; i<15; i++){
-        for(int j=0; j<15; j++){
-            if(rand()%2){
-                m_boardLetters[i][j] = new Textbox(sf::Vector2f(m_window->getSize().x / 3.871f + i*m_window->getSize().x / 31.15f, m_window->getSize().y / 36.f + j*m_window->getSize().y / 21.12f), sf::Vector2i(m_window->getSize().x / 29.75f, m_window->getSize().y / 20.145f),"",0);
-                m_boardLetters[i][j]->setImage("static/letters/pl/Ć.png");
-            }
-            else m_boardLetters[i][j] = NULL;
-        }
-    }
+    // srand(time(NULL));
+    // for(int i=0; i<15; i++){
+    //     for(int j=0; j<15; j++){
+    //         if(rand()%2){
+    //             m_boardLetters[i][j] = new Textbox(sf::Vector2f(m_window->getSize().x / 3.871f + i*m_window->getSize().x / 31.15f, m_window->getSize().y / 36.f + j*m_window->getSize().y / 21.12f), sf::Vector2i(m_window->getSize().x / 29.75f, m_window->getSize().y / 20.145f),"",0);
+    //             m_boardLetters[i][j]->setImage("static/letters/pl/Ć.png");
+    //         }
+    //         else m_boardLetters[i][j] = NULL;
+    //     }
+    // }
+    m_board->addWord(1,7,"ELO_JESIENIARO",HORIZONTAL,m_window);
     /* End of debug */
-
-
-
 }
 
 Game::~Game()
@@ -58,15 +49,8 @@ void Game::draw()
 {
     /* Draw board and BG */
     m_window->clear(sf::Color(0, 99, 64));
+    m_board->draw(m_window);
 
-    m_window->draw(m_boardSprite);
-
-    /* Debug letters */
-    for(int i=0; i<15; i++){
-        for(int j=0; j<15; j++){
-            if(m_boardLetters[i][j]) m_window->draw(*m_boardLetters[i][j]->getSpritePointer());
-        }
-    }
     /* Draw score table */
     m_window->draw(*m_scoreHeader->getTextPointer());
     for(int i=0; i<4; i++) m_window->draw(*m_scoreTable[i][0]->getTextPointer());

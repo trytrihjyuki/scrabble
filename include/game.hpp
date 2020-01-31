@@ -28,9 +28,6 @@ private:
 
     std::vector <Player*> m_players;
 
-    sf::Texture m_boardTexture;
-    sf::Sprite m_boardSprite;
-
     Textbox* m_boardLetters[15][15];
     Board* m_board;
 

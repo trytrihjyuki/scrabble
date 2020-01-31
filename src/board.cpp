@@ -1,7 +1,15 @@
 #include"board.hpp"
 
-Board::Board()
+Board::Board(sf::RenderWindow* window)
 {
+    /* Board texture */
+    m_boardTexture.loadFromFile("static/plansza.png");
+    m_boardTexture.setSmooth(true);
+    m_boardSprite.setTexture(m_boardTexture);
+    m_boardSprite.setScale(sf::Vector2f((float)window->getSize().y / (float)m_boardTexture.getSize().y / 1.4f, (float)window->getSize().y / (float)m_boardTexture.getSize().y / 1.4f));
+    m_boardSprite.setPosition(sf::Vector2f(window->getSize().x / 2.f - (m_boardTexture.getSize().x * m_boardSprite.getScale().x) / 2.f, window->getSize().y / 10.f - 70));
+
+    /* Board tables */
     for(int x=0; x<15; x++)
     {
         for(int y=0; y<15; y++)
@@ -32,30 +40,39 @@ int Board::addWord(int x, int y, std::string word, bool orientation, sf::RenderW
     /* Checking if the word fits in the board */
     if(x < 0 || x >= 15) return -1;
     if(y < 0 || y >= 15) return -1;
-    if(orientation==VERTICAL)
-        if(y + (int)word.size() >= 15) return -1;
-    else
-        if(x + (int)word.size() >= 15) return -1;
+    if(orientation == VERTICAL)
+        if(y + (int)word.size() > 15) return -1;
+    if(orientation == HORIZONTAL)
+        if(x + (int)word.size() > 15) return -1;
     /* Creating word on board, counting score */
     int score = 0;
-    if(orientation==VERTICAL)
+    if(orientation == VERTICAL)
     {
         for(unsigned int y_c = y; y_c < y + word.size(); y_c++)
         {
-            m_letters[x][y_c] = new Textbox(sf::Vector2f(window->getSize().x / 3.871f, window->getSize().y / 36.f + y_c*window->getSize().y / 21.12f), sf::Vector2i(window->getSize().x / 29.75f, window->getSize().y / 20.145f),"",0);
+            m_letters[x][y_c] = new Textbox(sf::Vector2f(window->getSize().x / 3.871f + x*window->getSize().x / 31.15f, window->getSize().y / 36.f + y_c*window->getSize().y / 21.12f), sf::Vector2i(window->getSize().x / 29.75f, window->getSize().y / 20.145f),"",0);
             m_letters[x][y_c]->setImage(std::string("static/letters/pl/") + word[y_c-y] + ".png");
         }
     }
-    else
+    if(orientation == HORIZONTAL)
     {
         for(unsigned int x_c = x; x_c < x + word.size(); x_c++)
         {
-            m_letters[x_c][y] = new Textbox(sf::Vector2f(window->getSize().x / 3.871f + x_c*window->getSize().x / 31.15f, window->getSize().y / 36.f), sf::Vector2i(window->getSize().x / 29.75f, window->getSize().y / 20.145f),"",0);
+            m_letters[x_c][y] = new Textbox(sf::Vector2f(window->getSize().x / 3.871f + x_c*window->getSize().x / 31.15f, window->getSize().y / 36.f + y*window->getSize().y / 21.12f), sf::Vector2i(window->getSize().x / 29.75f, window->getSize().y / 20.145f),"",0);
             m_letters[x_c][y]->setImage(std::string("static/letters/pl/") + word[x_c-x] + ".png");
         }
     }
 
     return score;
+}
 
+void Board::draw(sf::RenderWindow* window)
+{
+    /* Drawing board and letters on it */
+    window->draw(m_boardSprite);
+
+    for(int x = 0; x < 15; x++)
+        for(int y = 0; y < 15; y++)
+            if(m_letters[x][y]) window->draw(*m_letters[x][y]->getSpritePointer());
 }
 
