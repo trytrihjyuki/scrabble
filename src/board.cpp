@@ -45,15 +45,24 @@ Board::~Board()
 
 }
 
+void Board::draw(sf::RenderWindow* window)
+{
+    /* Drawing board and letters on it */
+    window->draw(m_boardSprite);
+
+    for(int x = 0; x < 15; x++)
+        for(int y = 0; y < 15; y++)
+            if(m_lettersImg[x][y]) window->draw(*m_lettersImg[x][y]->getSpritePointer());
+}
+
 int Board::addWord(int x, int y, std::vector < std::string > word, bool orientation, sf::RenderWindow* window)
 {
-    /* Checking if the word fits in the board */
-    if(x < 0 || x >= 15) return -1;
-    if(y < 0 || y >= 15) return -1;
-    if(orientation == VERTICAL)
-        if(y + (int)word.size() > 15) return -1;
-    if(orientation == HORIZONTAL)
-        if(x + (int)word.size() > 15) return -1;
+
+    printf("Trying to put word \"");
+    for(auto letter: word) std::cout<<letter;
+    printf("\" on (%d,%d) cords orientated %d\n",x,y,orientation);
+    if(!checkCorrectness(x,y,word,orientation)) { return -1; printf("[-] Cannot put word\n");}
+
     /* Creating word on board, counting score */
     int score = 0;
     if(orientation == VERTICAL)
@@ -76,36 +85,88 @@ int Board::addWord(int x, int y, std::vector < std::string > word, bool orientat
     return score;
 }
 
-int Board::checkCorrectness(int x, int y, std::vector < std::string > word , bool orientation)
+bool Board::checkCorrectness(int x, int y, std::vector < std::string > word , bool orientation)
 {
+    /* Checking if the word fits in the board */
+    if(x < 0 || x >= 15) return false;
+    if(y < 0 || y >= 15) return false;
 
+    if(orientation == VERTICAL)
+        if(y + (int)word.size() > 15) return false;
+    if(orientation == HORIZONTAL)
+        if(x + (int)word.size() > 15) return false;
+
+    for(unsigned int y_c = y; y_c - y < word.size(); y_c++) if(m_letters[x][y_c] != "") return false;
+    for(unsigned int x_c = x; x_c - x < word.size(); x_c++) if(m_letters[x_c][y] != "") return false;
+
+    /* Checking correctness of all new words */
+    std::vector < std::string > newWords;
+    newWords.resize(0);
+
+    /* Checking NEW word in row/column */
+    std::vector < std::string > prefix; std::vector < std::string > sufix;
+    prefix.resize(0); sufix.resize(0);
+
+    /* Word fits the board, put it and check if NEW words are correct, if no take it back */
+    if(orientation == VERTICAL) for(unsigned int y_c = y; y_c < y + word.size(); y_c++) m_letters[x][y_c] = word[y_c-y];
+    if(orientation == HORIZONTAL) for(unsigned int x_c = x; x_c < x + word.size(); x_c++) m_letters[x_c][y] = word[x_c-x];
+
+    getNewWord(x,y,orientation,&newWords);
+
+    if(orientation == VERTICAL)
+    {
+        /* Checking NEW words in rows */
+        for(unsigned int y_c = y; y_c < y + word.size(); y_c++)
+            getNewWord(x,y_c,HORIZONTAL,&newWords);
+    }
+    if(orientation == HORIZONTAL)
+    {
+        /* Checking NEW words in columns */
+        for(unsigned int x_c = x; x_c < x + word.size(); x_c++)
+            getNewWord(x_c,y,VERTICAL,&newWords);
+    }
+
+    std::cout<<"New words: \n";
+    for(auto words:newWords) std::cout<<words<<"\n";
+
+    return true;
 
 }
 
+void Board::getNewWord(int x, int y, bool orientation, std::vector < std::string >* newWords)
+{
+    std::vector < std::string > prefix; std::vector < std::string > sufix;
+    prefix.resize(0); sufix.resize(0);
 
-int countScore(int x, int y, std::string word, bool orientation)
+    if(orientation == VERTICAL)
+    {
+        for(int y_c = y-1; y_c >= 0 && m_letters[x][y_c] != ""; y_c--) prefix.push_back(m_letters[x][y_c]);
+        for(int y_c = y; y_c <= 14 && m_letters[x][y_c] != ""; y_c++) sufix.push_back(m_letters[x][y_c]);
+    }
+    if(orientation == HORIZONTAL)
+    {
+        for(int x_c = x-1; x_c >= 0 && m_letters[x_c][y] != ""; x_c--) prefix.push_back(m_letters[x_c][y]);
+        for(int x_c = x; x_c <= 14 && m_letters[x_c][y] != ""; x_c++) sufix.push_back(m_letters[x_c][y]);
+    }
+    std::reverse(prefix.begin(), prefix.end());
+    std::string newWord = "";
+    for(auto letter:prefix) newWord+=letter;
+    for(auto letter:sufix) newWord+=letter;
+
+    /* Skip simple newWords */
+    if(prefix.size() + sufix.size() > 1) newWords->push_back(newWord);
+}
+int countScore(/*int x, int y, std::string word, bool orientation*/)
 {
 
 }
-void Board::draw(sf::RenderWindow* window)
-{
-    /* Drawing board and letters on it */
-    window->draw(m_boardSprite);
-
-    for(int x = 0; x < 15; x++)
-        for(int y = 0; y < 15; y++)
-            if(m_lettersImg[x][y]) window->draw(*m_lettersImg[x][y]->getSpritePointer());
-}
-
-
-
 
 
 void Board::debugRANDOMBOARD(sf::RenderWindow* window)
 {
     srand(time(NULL));
     std::vector < std::string > letters = {"A","Ą","B","C","Ć","D","E","Ę","F","G","H","I","J","K","L","Ł","M","N","Ń","O","Ó","P","R","S","Ś","T","U","W","Y","Z","Ź","Ż"};
-    int n = rand()%10+1;
+    int n = rand()%30+1;
     for(int i=0; i<n; i++){
         std::vector < std::string > randomword;
         randomword.resize(0);

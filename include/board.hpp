@@ -23,17 +23,18 @@ public:
     Board(sf::RenderWindow* window);
     ~Board();
 
-    int checkCorrectness(int x, int y, std::vector < std::string > word, bool orientation);
+    void draw(sf::RenderWindow* window);
 
     int addWord(int x, int y, std::vector < std::string > word, bool orientation, sf::RenderWindow* window);
 
-    int countScore(int x, int y, std::vector < std::string > word, bool orientation);
-
-    void draw(sf::RenderWindow* window);
-
+    int countScore(/*int x, int y, std::vector < std::string > word, bool orientation*/);
     void debugRANDOMBOARD(sf::RenderWindow* window);
 
 private:
+    bool checkCorrectness(int x, int y, std::vector < std::string > word, bool orientation);
+
+    void getNewWord(int x, int y, bool orientation, std::vector < std::string >* newWords);
+
     sf::Texture m_boardTexture;
     sf::Sprite m_boardSprite;
 
