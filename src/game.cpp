@@ -26,7 +26,10 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     //         else m_boardLetters[i][j] = NULL;
     //     }
     // }
-    m_board->addWord(1,7,"ELO_JESIENIARO",HORIZONTAL,m_window);
+    std::vector < std::string > debug = {"Ą","Ę","Ć","Ł","Ń","Ó","Ś","Ż","Ź"};
+    m_board->addWord(1,7,debug,HORIZONTAL,m_window);
+    m_board->debugRANDOMBOARD(m_window);
+
     /* End of debug */
 }
 

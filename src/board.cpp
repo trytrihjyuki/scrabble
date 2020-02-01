@@ -14,9 +14,10 @@ Board::Board(sf::RenderWindow* window)
     {
         for(int y=0; y<15; y++)
         {
-            m_letters[x][y] = NULL;
+            m_lettersImg[x][y] = NULL;
             m_letterBonus[x][y] = 1;
             m_wordBonus[x][y] = 1;
+            m_letters[x][y] = "";
             /* Setting words and letters bonus */
             if(x+y == 14 && abs(x-7) > 2) m_wordBonus[x][y] = 2;
             if(x==y && abs(x-7) > 2) m_wordBonus[x][y] = 2;
@@ -44,7 +45,7 @@ Board::~Board()
 
 }
 
-int Board::addWord(int x, int y, std::string word, bool orientation, sf::RenderWindow* window)
+int Board::addWord(int x, int y, std::vector < std::string > word, bool orientation, sf::RenderWindow* window)
 {
     /* Checking if the word fits in the board */
     if(x < 0 || x >= 15) return -1;
@@ -59,22 +60,33 @@ int Board::addWord(int x, int y, std::string word, bool orientation, sf::RenderW
     {
         for(unsigned int y_c = y; y_c < y + word.size(); y_c++)
         {
-            m_letters[x][y_c] = new Textbox(sf::Vector2f(window->getSize().x / 3.871f + x*window->getSize().x / 31.15f, window->getSize().y / 36.f + y_c*window->getSize().y / 21.12f), sf::Vector2i(window->getSize().x / 29.75f, window->getSize().y / 20.145f),"",0);
-            m_letters[x][y_c]->setImage(std::string("static/letters/pl/") + word[y_c-y] + ".png");
+            m_lettersImg[x][y_c] = new Textbox(sf::Vector2f(window->getSize().x / 3.871f + x*window->getSize().x / 31.15f, window->getSize().y / 36.f + y_c*window->getSize().y / 21.12f), sf::Vector2i(window->getSize().x / 29.75f, window->getSize().y / 20.145f),"",0);
+            m_lettersImg[x][y_c]->setImage(std::string("static/letters/pl/") + word[y_c-y] + ".png");
         }
     }
     if(orientation == HORIZONTAL)
     {
         for(unsigned int x_c = x; x_c < x + word.size(); x_c++)
         {
-            m_letters[x_c][y] = new Textbox(sf::Vector2f(window->getSize().x / 3.871f + x_c*window->getSize().x / 31.15f, window->getSize().y / 36.f + y*window->getSize().y / 21.12f), sf::Vector2i(window->getSize().x / 29.75f, window->getSize().y / 20.145f),"",0);
-            m_letters[x_c][y]->setImage(std::string("static/letters/pl/") + word[x_c-x] + ".png");
+            m_lettersImg[x_c][y] = new Textbox(sf::Vector2f(window->getSize().x / 3.871f + x_c*window->getSize().x / 31.15f, window->getSize().y / 36.f + y*window->getSize().y / 21.12f), sf::Vector2i(window->getSize().x / 29.75f, window->getSize().y / 20.145f),"",0);
+            m_lettersImg[x_c][y]->setImage(std::string("static/letters/pl/") + word[x_c-x] + ".png");
         }
     }
 
     return score;
 }
 
+int Board::checkCorrectness(int x, int y, std::vector < std::string > word , bool orientation)
+{
+
+
+}
+
+
+int countScore(int x, int y, std::string word, bool orientation)
+{
+
+}
 void Board::draw(sf::RenderWindow* window)
 {
     /* Drawing board and letters on it */
@@ -82,6 +94,28 @@ void Board::draw(sf::RenderWindow* window)
 
     for(int x = 0; x < 15; x++)
         for(int y = 0; y < 15; y++)
-            if(m_letters[x][y]) window->draw(*m_letters[x][y]->getSpritePointer());
+            if(m_lettersImg[x][y]) window->draw(*m_lettersImg[x][y]->getSpritePointer());
 }
 
+
+
+
+
+void Board::debugRANDOMBOARD(sf::RenderWindow* window)
+{
+    srand(time(NULL));
+    std::vector < std::string > letters = {"A","Ą","B","C","Ć","D","E","Ę","F","G","H","I","J","K","L","Ł","M","N","Ń","O","Ó","P","R","S","Ś","T","U","W","Y","Z","Ź","Ż"};
+    int n = rand()%10+1;
+    for(int i=0; i<n; i++){
+        std::vector < std::string > randomword;
+        randomword.resize(0);
+        int m =rand()%10+1;
+        for(int j=0; j<m; j++){
+            randomword.push_back(letters[rand()%32]);
+        }
+        if(rand()%2)
+            addWord(rand()%10,rand()%10,randomword,VERTICAL,window);
+        else
+            addWord(rand()%10,rand()%10,randomword,HORIZONTAL,window);
+    }
+}
