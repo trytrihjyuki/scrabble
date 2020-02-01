@@ -3,6 +3,7 @@
 #include<iostream>
 #include<vector>
 #include<string>
+#include<map>
 
 #include<SFML/Graphics.hpp>
 #include<SFML/System.hpp>
@@ -33,5 +34,7 @@ private:
     Textbox* m_letters[15][15];
     int m_letterBonus[15][15];
     int m_wordBonus[15][15];
+
+    std::map <std::string,int> m_lettersPoints;
 
 };
