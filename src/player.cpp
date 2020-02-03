@@ -42,3 +42,19 @@ int Player::getScore(){
 void Player::setScore(int score){
     m_score = score;
 }
+
+std::vector < std::string > Player::getLetters()
+{
+    return m_letters;
+}
+
+void Player::setRandomLetters(std::vector < std::string >* letterBag)
+{
+    srand(time(NULL));
+    std::random_shuffle (letterBag->begin(), letterBag->end());
+    for(int i = 0; i < std::min(7, (int)letterBag->size()); i++)
+    {
+        m_letters.push_back((*letterBag)[i]);
+        letterBag->erase(letterBag->begin());
+    }
+}

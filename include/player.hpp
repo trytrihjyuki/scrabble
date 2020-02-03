@@ -3,6 +3,7 @@
 #include<iostream>
 #include<vector>
 #include<string>
+#include<algorithm>
 
 #include<SFML/Graphics.hpp>
 #include<SFML/System.hpp>
@@ -33,10 +34,16 @@ public:
     int getScore();
 
     void setScore(int Score);
+
+    std::vector < std::string > getLetters();
+
+    void setRandomLetters(std::vector < std::string >* letterBag);
 private:
     std::string m_name;
-    char m_letters[7];
-    int m_score;
-    bool m_human;
     bool m_activate;
+    bool m_human;
+
+    std::vector < std::string > m_letters;
+    int m_score;
+
 };

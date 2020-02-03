@@ -26,16 +26,22 @@ private:
 
     sf::RenderWindow* m_window;
 
-    std::vector <Player*> m_players;
+    std::vector < Player* > m_players;
 
     Textbox* m_boardLetters[15][15];
     Board* m_board;
+
+    std::vector < std::string > m_letterBag;
 
     Textbox* m_scoreHeader;
     Textbox* m_scoreTable[4][2];
 
     Textbox* m_activePlayerName;
     Textbox* m_activePlayerHeader;
+    Textbox* m_playerTilesHeader;
+    std::vector < Textbox* > m_activePlayerTiles;
+
+    Textbox* m_enterWordHeader;
 
     bool m_exitGame;
 
