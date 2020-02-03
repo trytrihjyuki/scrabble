@@ -16,7 +16,10 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     for(int i=0; i<4; i++) m_scoreTable[i][1] = new Textbox(sf::Vector2f(m_window->getSize().x / 6.4f, m_window->getSize().y / 7.f + (i+1)*60), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f), std::to_string(m_players[i]->getScore()),30);
 
     /*Test letter*/;
-    m_board->debugRANDOMBOARD(m_window);
+    //m_board->debugRANDOMBOARD(m_window);
+    std::vector < std::string > obiad = {"O", "B", "I", "A", "D"};
+    std::vector < std::string > baba = {"B","A","B","A"};
+    m_board->addWord(4,4,obiad,VERTICAL, m_window);
     /* End of debug */
 }
 

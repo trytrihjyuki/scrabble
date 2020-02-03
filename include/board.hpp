@@ -37,7 +37,7 @@ public:
 
     int addWord(int x, int y, std::vector < std::string > word, bool orientation, sf::RenderWindow* window);
 
-    int countScore(/*int x, int y, std::vector < std::string > word, bool orientation*/);
+    int countScore(int x, int y, std::vector < std::string > word, bool orientation);
     void debugRANDOMBOARD(sf::RenderWindow* window);
 
 private:
