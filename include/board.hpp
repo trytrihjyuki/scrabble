@@ -4,6 +4,8 @@
 #include<vector>
 #include<string>
 #include<map>
+#include<unordered_map>
+#include<fstream>
 
 #include<SFML/Graphics.hpp>
 #include<SFML/System.hpp>
@@ -13,9 +15,16 @@
 
 #include"textbox.hpp"
 
-
+/* Orientation */
 #define VERTICAL 1
 #define HORIZONTAL 0
+
+/* Types of mistakes with adding new word */
+#define OUTREACHBOARD 0
+#define OVERWRITEWORD 1
+#define UNCORRECTWORD 2
+#define CORRECTWORD 5
+
 
 class Board
 {
@@ -31,7 +40,7 @@ public:
     void debugRANDOMBOARD(sf::RenderWindow* window);
 
 private:
-    bool checkCorrectness(int x, int y, std::vector < std::string > word, bool orientation);
+    std::pair < bool, int > checkCorrectness(int x, int y, std::vector < std::string > word, bool orientation);
 
     void getNewWord(int x, int y, bool orientation, std::vector < std::string >* newWords);
 
@@ -43,6 +52,10 @@ private:
     int m_letterBonus[15][15];
     int m_wordBonus[15][15];
 
+    std::unordered_map <std::string, int> m_dictionary;
+
     std::map <std::string,int> m_lettersPoints;
+
+    int m_totalMoves;
 
 };

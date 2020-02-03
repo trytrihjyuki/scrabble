@@ -38,6 +38,12 @@ Board::Board(sf::RenderWindow* window)
     m_lettersPoints["Ą"] = 5; m_lettersPoints["Ę"] = 5; m_lettersPoints["F"] = 5; m_lettersPoints["Ó"] = 5; m_lettersPoints["Ś"] = 5; m_lettersPoints["Ż"] = 5;
     m_lettersPoints["Ń"] = 7;
     m_lettersPoints["Ź"] = 9;
+
+    /* Reading dictionary from file */
+    std::fstream dictionaryFile; std::string word;
+    dictionaryFile.open("static/polish_words.txt");
+    printf("[+] Reading dictionary from file. Please wait...\n"); 
+    while (dictionaryFile >> word) m_dictionary[word] = 1;
 }
 
 Board::~Board()
@@ -58,10 +64,29 @@ void Board::draw(sf::RenderWindow* window)
 int Board::addWord(int x, int y, std::vector < std::string > word, bool orientation, sf::RenderWindow* window)
 {
 
-    printf("Trying to put word \"");
+    /* Debug */
+    printf("\nTrying to put word \"");
     for(auto letter: word) std::cout<<letter;
     printf("\" on (%d,%d) cords orientated %d\n",x,y,orientation);
-    if(!checkCorrectness(x,y,word,orientation)) { return -1; printf("[-] Cannot put word\n");}
+    // if(!checkCorrectness(x,y,word,orientation).first) { return -1; printf("[-] Cannot put word\n");}
+    /* End of debug */
+    std::pair < bool, int > response = checkCorrectness(x,y,word,orientation);
+    if(!response.first)
+    {
+        switch (response.second){
+            case 0:
+                printf("[-] Cannot put the word, it outreach the board.\n");
+                break;
+            case 1:
+                printf("[-] Cannot put the word, it overwrites some word on board.\n");
+                break;
+            case 2:
+                printf("[-] Cannot put the word, it's not correct.\n");
+                break;
+        }
+
+        return response.first;
+    }
 
     /* Creating word on board, counting score */
     int score = 0;
@@ -85,19 +110,26 @@ int Board::addWord(int x, int y, std::vector < std::string > word, bool orientat
     return score;
 }
 
-bool Board::checkCorrectness(int x, int y, std::vector < std::string > word , bool orientation)
+int countScore(/*int x, int y, std::string word, bool orientation*/)
+{
+
+}
+
+std::pair < bool, int > Board::checkCorrectness(int x, int y, std::vector < std::string > word , bool orientation)
 {
     /* Checking if the word fits in the board */
-    if(x < 0 || x >= 15) return false;
-    if(y < 0 || y >= 15) return false;
+    if(x < 0 || x >= 15) return {false, OUTREACHBOARD};
+    if(y < 0 || y >= 15) return {false, OUTREACHBOARD};
 
     if(orientation == VERTICAL)
-        if(y + (int)word.size() > 15) return false;
+        if(y + (int)word.size() > 15) return {false, OUTREACHBOARD};
     if(orientation == HORIZONTAL)
-        if(x + (int)word.size() > 15) return false;
+        if(x + (int)word.size() > 15) return {false, OUTREACHBOARD};
 
-    for(unsigned int y_c = y; y_c - y < word.size(); y_c++) if(m_letters[x][y_c] != "") return false;
-    for(unsigned int x_c = x; x_c - x < word.size(); x_c++) if(m_letters[x_c][y] != "") return false;
+    std::cout<<(x+word.size())<<"   xd    "<<(y+word.size())<<"\n";
+
+    for(unsigned int y_c = y; y_c - y < word.size(); y_c++) if(m_letters[x][y_c] != "") return {false, OVERWRITEWORD};
+    for(unsigned int x_c = x; x_c - x < word.size(); x_c++) if(m_letters[x_c][y] != "") return {false, OVERWRITEWORD};
 
     /* Checking correctness of all new words */
     std::vector < std::string > newWords;
@@ -126,10 +158,22 @@ bool Board::checkCorrectness(int x, int y, std::vector < std::string > word , bo
             getNewWord(x_c,y,VERTICAL,&newWords);
     }
 
-    std::cout<<"New words: \n";
-    for(auto words:newWords) std::cout<<words<<"\n";
+    /* Debug */
+    // std::cout<<"New words: \n";
+    // for(auto words:newWords) std::cout<<words<<"\n";
+    /* End of debug */
 
-    return true;
+
+    for(auto newWord:newWords) 
+        if(m_dictionary[newWord] != 1)
+        {
+            /* Take back the word from board if it's not correct */
+            if(orientation == VERTICAL) for(unsigned int y_c = y; y_c < y + word.size(); y_c++) m_letters[x][y_c] = "";
+            if(orientation == HORIZONTAL) for(unsigned int x_c = x; x_c < x + word.size(); x_c++) m_letters[x_c][y] = "";
+            return {false, UNCORRECTWORD};
+        }
+
+    return {true, CORRECTWORD};
 
 }
 
@@ -156,11 +200,6 @@ void Board::getNewWord(int x, int y, bool orientation, std::vector < std::string
     /* Skip simple newWords */
     if(prefix.size() + sufix.size() > 1) newWords->push_back(newWord);
 }
-int countScore(/*int x, int y, std::string word, bool orientation*/)
-{
-
-}
-
 
 void Board::debugRANDOMBOARD(sf::RenderWindow* window)
 {
