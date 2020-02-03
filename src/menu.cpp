@@ -77,12 +77,12 @@ void Menu::processEvents()
     sf::Vector2f mouse = sf::Vector2f(sf::Mouse::getPosition(*m_window).x, sf::Mouse::getPosition(*m_window).y);
 
     /* Debug */
-    printf("[+] Starting game\n");
-    game = new Game(m_window, m_players);
-    game->run();
-    printf("[+] Ending game\n");
-    delete game;
-    return;
+    // printf("[+] Starting game\n");
+    // game = new Game(m_window, m_players);
+    // game->run();
+    // printf("[+] Ending game\n");
+    // delete game;
+    // return;
     /* End of debug */
 
 
@@ -133,7 +133,7 @@ void Menu::processEvents()
                                 m_players[i]->setName(temp);
                             }
                         }
-                        else if(m_players[i]->getName().size() < 12)
+                        else if(m_players[i]->getName().size() < 10)
                             m_players[i]->setName(m_players[i]->getName()+(char)event.text.unicode);
 
                         m_playersButtons[i][0]->updateText(m_players[i]->getName());

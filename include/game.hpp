@@ -34,7 +34,12 @@ private:
     Textbox* m_scoreHeader;
     Textbox* m_scoreTable[4][2];
 
+    Textbox* m_activePlayerName;
+    Textbox* m_activePlayerHeader;
+
     bool m_exitGame;
 
     int m_playersNumber;
+
+    int m_turn;
 };
