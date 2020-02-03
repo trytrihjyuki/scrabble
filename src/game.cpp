@@ -98,5 +98,5 @@ void Game::processEvents()
             printf("[+] Exit game\n");
             break;
         }
-    }
+    } 
 }

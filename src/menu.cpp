@@ -18,7 +18,7 @@ Menu::Menu(size_t width, size_t height)
         m_players[i] = new Player("PLAYER "+std::to_string(i));
         m_playersButtons[i][0] = new Button(sf::Vector2f(m_window->getSize().x / 4.f, m_window->getSize().y / 4.f + i*119), sf::Vector2i(300, 75.f), m_players[i]->getName(),50);
         m_playersButtons[i][1] = new Button(sf::Vector2f(m_window->getSize().x / 2.f, m_window->getSize().y / 4.f + i*120), sf::Vector2i(324, 93.f), m_players[i]->getName(),0);
-        m_playersButtons[i][1]->setImage("static/human_button2.png");
+        m_playersButtons[i][1]->setImage("static/human_button.png");
     }
     m_exitOptionButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 1.7f + 200 - 50), sf::Vector2i(300, 75.f), "GO BACK",40);
 
@@ -116,8 +116,8 @@ void Menu::processEvents()
                     if(m_playersButtons[i][0]->isPressed()) printf("[+] Clicked player %d\n",i);
                     if(m_playersButtons[i][1]->isPressed()){
                         printf("[+] Clicked switchbox player no. %d\n",i);
-                        if(m_players[i]->getHuman()) m_playersButtons[i][1]->setImage("static/computer_button2.png");
-                        else m_playersButtons[i][1]->setImage("static/human_button2.png");
+                        if(m_players[i]->getHuman()) m_playersButtons[i][1]->setImage("static/computer_button.png");
+                        else m_playersButtons[i][1]->setImage("static/human_button.png");
                         m_players[i]->setHuman(!m_players[i]->getHuman());
                     }
                 }

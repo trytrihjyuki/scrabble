@@ -52,6 +52,7 @@ void Player::setRandomLetters(std::vector < std::string >* letterBag)
 {
     srand(time(NULL));
     std::random_shuffle (letterBag->begin(), letterBag->end());
+    m_letters.clear();
     for(int i = 0; i < std::min(7, (int)letterBag->size()); i++)
     {
         m_letters.push_back((*letterBag)[i]);
