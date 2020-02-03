@@ -24,6 +24,9 @@ Board::Board(sf::RenderWindow* window)
             if(x%7 == 0 && y%7 == 0) m_wordBonus[x][y] = 3;
         }
     }
+
+    m_totalWords = 0;
+
     /* Setting words and letters bonus */
     m_wordBonus[7][7] = 2;
     m_letterBonus[5][1] = 3; m_letterBonus[9][1] = 3; m_letterBonus[1][5] = 3; m_letterBonus[5][5] = 3; m_letterBonus[9][5] = 3; m_letterBonus[13][5] = 3; m_letterBonus[1][9] = 3; m_letterBonus[5][9] = 3; m_letterBonus[9][9] = 3; m_letterBonus[13][9] = 3; m_letterBonus[5][13] = 3; m_letterBonus[9][13] = 3;
@@ -68,20 +71,23 @@ int Board::addWord(int x, int y, std::vector < std::string > word, bool orientat
     printf("\nTrying to put word \"");
     for(auto letter: word) std::cout<<letter;
     printf("\" on (%d,%d) cords orientated %d\n",x,y,orientation);
-    // if(!checkCorrectness(x,y,word,orientation).first) { return -1; printf("[-] Cannot put word\n");}
     /* End of debug */
+
     std::pair < bool, int > response = checkCorrectness(x,y,word,orientation);
     if(!response.first)
     {
         switch (response.second){
-            case 0:
+            case OUTREACHBOARD:
                 printf("[-] Cannot put the word, it outreach the board.\n");
                 break;
-            case 1:
+            case OVERWRITEWORD:
                 printf("[-] Cannot put the word, it overwrites some word on board.\n");
                 break;
-            case 2:
+            case UNCORRECTWORD:
                 printf("[-] Cannot put the word, it's not correct.\n");
+                break;
+            case NONEIGHBOUR:
+                printf("[-] Cannot put the word, no words in neighbourhood.\n");
                 break;
         }
 
@@ -126,10 +132,8 @@ std::pair < bool, int > Board::checkCorrectness(int x, int y, std::vector < std:
     if(orientation == HORIZONTAL)
         if(x + (int)word.size() > 15) return {false, OUTREACHBOARD};
 
-    std::cout<<(x+word.size())<<"   xd    "<<(y+word.size())<<"\n";
-
-    for(unsigned int y_c = y; y_c - y < word.size(); y_c++) if(m_letters[x][y_c] != "") return {false, OVERWRITEWORD};
-    for(unsigned int x_c = x; x_c - x < word.size(); x_c++) if(m_letters[x_c][y] != "") return {false, OVERWRITEWORD};
+    if(orientation == VERTICAL) for(unsigned int y_c = y; y_c - y < word.size(); y_c++) if(m_letters[x][y_c] != "") return {false, OVERWRITEWORD};
+    if(orientation == HORIZONTAL) for(unsigned int x_c = x; x_c - x < word.size(); x_c++) if(m_letters[x_c][y] != "") return {false, OVERWRITEWORD};
 
     /* Checking correctness of all new words */
     std::vector < std::string > newWords;
@@ -139,9 +143,29 @@ std::pair < bool, int > Board::checkCorrectness(int x, int y, std::vector < std:
     std::vector < std::string > prefix; std::vector < std::string > sufix;
     prefix.resize(0); sufix.resize(0);
 
+    /* Check if word has a neighbour */
+    bool temp = false;
+    if(orientation == VERTICAL)
+    {
+        if(y>0 && m_letters[x][y-1] != "") temp = true;
+        if(y+word.size() < 15 && m_letters[x][y+word.size()] != "") temp = true;
+        for(unsigned int y_c = y; y_c - y < word.size(); y_c++) if(x - 1 >= 0 && m_letters[x-1][y_c] != "") temp = true;
+        for(unsigned int y_c = y; y_c - y < word.size(); y_c++) if(x + 1 < 15 && m_letters[x+1][y_c] != "") temp = true;
+    }
+    if(orientation == HORIZONTAL)
+    {
+        if(x>0 && m_letters[x-1][y] != "") temp = true;
+        if(x+word.size() < 15 && m_letters[x+word.size()][y] != "") temp = true;
+        for(unsigned int x_c = y; x_c - y < word.size(); x_c++) if(y - 1 >= 0 && m_letters[x_c][y-1] != "") temp = true;
+        for(unsigned int x_c = y; x_c - y < word.size(); x_c++) if(y + 1 < 15 && m_letters[x_c][y+1] != "") temp = true;
+    }
+    if(!temp && m_totalWords != 0) return {false, NONEIGHBOUR};
+
+
     /* Word fits the board, put it and check if NEW words are correct, if no take it back */
     if(orientation == VERTICAL) for(unsigned int y_c = y; y_c < y + word.size(); y_c++) m_letters[x][y_c] = word[y_c-y];
     if(orientation == HORIZONTAL) for(unsigned int x_c = x; x_c < x + word.size(); x_c++) m_letters[x_c][y] = word[x_c-x];
+
 
     getNewWord(x,y,orientation,&newWords);
 
@@ -157,12 +181,6 @@ std::pair < bool, int > Board::checkCorrectness(int x, int y, std::vector < std:
         for(unsigned int x_c = x; x_c < x + word.size(); x_c++)
             getNewWord(x_c,y,VERTICAL,&newWords);
     }
-
-    /* Debug */
-    // std::cout<<"New words: \n";
-    // for(auto words:newWords) std::cout<<words<<"\n";
-    /* End of debug */
-
 
     for(auto newWord:newWords) 
         if(m_dictionary[newWord] != 1)

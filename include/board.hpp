@@ -23,6 +23,7 @@
 #define OUTREACHBOARD 0
 #define OVERWRITEWORD 1
 #define UNCORRECTWORD 2
+#define NONEIGHBOUR 3
 #define CORRECTWORD 5
 
 
@@ -56,6 +57,6 @@ private:
 
     std::map <std::string,int> m_lettersPoints;
 
-    int m_totalMoves;
+    int m_totalWords;
 
 };
