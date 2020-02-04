@@ -33,7 +33,7 @@ sf::Text* Textbox::getTextPointer()
 void Textbox::updateText(std::string text)
 {
     m_text.setFont(m_font);
-    m_text.setString(text);
+    m_text.setString(sf::String::fromUtf8(text.begin(), text.end()));
     m_text.setFillColor(sf::Color(255, 242, 230));
 
     sf::FloatRect textRect = m_text.getLocalBounds();
