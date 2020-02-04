@@ -42,8 +42,11 @@ private:
     std::vector < Textbox* > m_activePlayerTiles;
 
     Textbox* m_enterWordHeader;
+    Button* m_enterWordButton;
+    std::string m_typedWord;
 
     bool m_exitGame;
+    bool m_endGame;
 
     int m_playersNumber;
 
