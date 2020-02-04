@@ -150,14 +150,11 @@ void Game::processEvents()
         if (event.type == sf::Event::TextEntered) /* Typing players names */
         {
                 if (m_enterWordButton->isPressed()){
-                    std::cout<<event.text.unicode<<"\n";
-                    std::cout<<"ą\nę\nó"<<int('ą')<<"\n"<<int('ę')<<"\n"<<int('ó')<<"\n";
                     if (event.text.unicode == '\b')
                     {
                         if (!m_typedWord.empty()) m_typedWord.pop_back();
                     }
                     else if(m_typedWord.size() <= 15) m_typedWord+= UnicodeToUTF8(event.text.unicode);
-                    std::cout<<"debug: "<<UnicodeToUTF8(event.text.unicode)<<"\n";
                     m_enterWordButton->updateText(m_typedWord);
                 }
         }

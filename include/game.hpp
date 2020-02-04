@@ -52,3 +52,5 @@ private:
 
     int m_turn;
 };
+
+std::string UnicodeToUTF8(unsigned int codepoint);
