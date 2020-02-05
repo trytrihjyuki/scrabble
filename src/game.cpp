@@ -1,5 +1,6 @@
 #include"game.hpp"
 
+/* Functions to handle UTF8 */
 std::string UnicodeToUTF8(unsigned int codepoint)
 {
     std::string out;
@@ -25,6 +26,29 @@ std::string UnicodeToUTF8(unsigned int codepoint)
         out.append(1, static_cast<char>(0x80 | (codepoint & 0x3f)));
     }
     return out;
+}
+
+std::string GetCapital(std::string letter)
+{
+    if (letter.size() == 1)
+    {
+        if(letter[0] >= 'a' && letter[0] <= 'z') letter[0]-=32;
+        return letter;
+    }
+    else
+    {
+        if(letter == "ą" || letter == "Ą") return "Ą";
+        if(letter == "ę" || letter == "Ę") return "Ę";
+        if(letter == "ł" || letter == "Ł") return "Ł";
+        if(letter == "ó" || letter == "Ó") return "Ó";
+        if(letter == "ć" || letter == "Ć") return "Ć";
+        if(letter == "ń" || letter == "Ń") return "Ń";
+        if(letter == "ś" || letter == "Ś") return "Ś";
+        if(letter == "ż" || letter == "Ż") return "Ż";
+        if(letter == "ź" || letter == "Ź") return "Ź";
+    }
+
+    return "";
 }
 
 Game::Game(sf::RenderWindow *window,Player* players[4])
@@ -61,12 +85,12 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     m_enterWordButton->setImage("static/enter_word.png");
 
     /*Test letter*/
-    //m_board->debugRANDOMBOARD(m_window);
-    std::vector < std::string > obiad = {"O", "B", "I", "A", "D"};
-    std::vector < std::string > baba = {"B","A","B","A"};
-    m_board->addWord(4,4,obiad,VERTICAL, m_window);
-    m_board->addWord(4,5,baba,HORIZONTAL, m_window);
-    m_board->addWord(6,4,obiad,VERTICAL, m_window);
+    m_board->debugRANDOMBOARD(m_window);
+    // std::vector < std::string > obiad = {"O", "B", "I", "A", "D"};
+    // std::vector < std::string > baba = {"B","A","B","A"};
+    // m_board->addWord(4,4,obiad,VERTICAL, m_window);
+    // m_board->addWord(4,5,baba,HORIZONTAL, m_window);
+    // m_board->addWord(6,4,obiad,VERTICAL, m_window);
     /* End of debug */
 }
 
@@ -144,7 +168,6 @@ void Game::processEvents()
             /* Activation of input names */
             m_enterWordButton->update(sf::Mouse::getPosition(*m_window), true);
             if(m_enterWordButton->isPressed()) printf("[+] Enter word typing ON \n");
-
         }
 
         if (event.type == sf::Event::TextEntered) /* Typing players names */
@@ -152,11 +175,15 @@ void Game::processEvents()
                 if (m_enterWordButton->isPressed()){
                     if (event.text.unicode == '\b')
                     {
-                        if (!m_typedWord.empty()) m_typedWord.pop_back();
+                        if (!m_typedWord.empty())
+                        {
+                            if (m_typedWord.size() > 2 && (m_typedWord[m_typedWord.size()-1] > 'Z' || m_typedWord[m_typedWord.size()-1] < 'A')) {m_typedWord.pop_back(); m_typedWord.pop_back();}
+                            else  m_typedWord.pop_back();
+                        }
                     }
-                    else if(m_typedWord.size() <= 15) m_typedWord+= UnicodeToUTF8(event.text.unicode);
+                    else if(m_typedWord.size() <= 15) m_typedWord+=GetCapital(UnicodeToUTF8(event.text.unicode));
                     m_enterWordButton->updateText(m_typedWord);
                 }
         }
-    } 
+    }
 }

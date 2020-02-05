@@ -54,3 +54,5 @@ private:
 };
 
 std::string UnicodeToUTF8(unsigned int codepoint);
+
+std::string GetCapital(std::string letter);

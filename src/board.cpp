@@ -46,7 +46,7 @@ Board::Board(sf::RenderWindow* window)
     std::fstream dictionaryFile; std::string word;
     dictionaryFile.open("static/polish_words.txt");
     printf("[+] Reading dictionary from file. Please wait...\n"); 
-    // while (dictionaryFile >> word) m_dictionary[word] = 1;
+    while (dictionaryFile >> word) m_dictionary[word] = 1;
     dictionaryFile.close();
 }
 
