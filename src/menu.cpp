@@ -135,7 +135,7 @@ void Menu::processEvents()
                         else if (m_players[i]->getNameLength() < 10)
                         {
                             m_players[i]->setName(m_players[i]->getName()+GetCapital(UnicodeToUTF8(event.text.unicode)));
-                            m_players[i]->addNameLength(1);
+                            if (GetCapital(UnicodeToUTF8(event.text.unicode)) != "") m_players[i]->addNameLength(1);
                         }
                         m_playersButtons[i][0]->updateText(m_players[i]->getName());
                     }

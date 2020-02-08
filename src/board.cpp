@@ -136,13 +136,16 @@ int Board::countScore(int x, int y, std::vector < std::string > word, bool orien
         for (int x_c = x-1; x_c >= 0 && m_letters[x_c][y] != ""; x_c--) {currScore += m_letterBonus[x_c][y] * m_lettersPoints[m_letters[x_c][y]]; currWordBonus *= m_wordBonus[x_c][y];}
         for (int x_c = x; x_c <= 14 && m_letters[x_c][y] != ""; x_c++) {currScore += m_letterBonus[x_c][y] * m_lettersPoints[m_letters[x_c][y]]; currWordBonus *= m_wordBonus[x_c][y];}
         score += currScore * currWordBonus;
-        std::cout<<currScore<<" "<<currWordBonus<<"\n";
+
         currScore = 0; currWordBonus = 1;
         for (unsigned int x_c = x; x_c < x + word.size(); x_c++)
         {
-            for (int y_c = y-1; y_c >= 0 && m_letters[x_c][y_c] != ""; y_c--) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
-            for (int y_c = y; y_c <= 14 && m_letters[x_c][y_c] != ""; y_c++) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
-            /* Delete extra points for same word */ if (y + 1 > 14 || m_letters[x_c][y+1] == "") {currScore -= m_letterBonus[x_c][y] * m_lettersPoints[m_letters[x_c][y]]; currWordBonus /= m_wordBonus[x_c][y];}
+            if(m_letters[x_c][y] == "") /* Add only new words */
+            {
+                for (int y_c = y-1; y_c >= 0 && m_letters[x_c][y_c] != ""; y_c--) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
+                for (int y_c = y; y_c <= 14 && m_letters[x_c][y_c] != ""; y_c++) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
+                /* Delete extra points for same word */ if (y + 1 > 14 || m_letters[x_c][y+1] == "") {currScore -= m_letterBonus[x_c][y] * m_lettersPoints[m_letters[x_c][y]]; currWordBonus /= m_wordBonus[x_c][y];}
+            }
         }
         score += currScore * currWordBonus;
     }
@@ -156,9 +159,12 @@ int Board::countScore(int x, int y, std::vector < std::string > word, bool orien
         currScore = 0; currWordBonus = 1;
         for (unsigned int y_c = y; y_c < y + word.size(); y_c++)
         {
-            for (int x_c = x-1; x_c >= 0 && m_letters[x_c][y_c] != ""; x_c--) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
-            for (int x_c = x; x_c <= 14 && m_letters[x_c][y_c] != ""; x_c++) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
-            /* Delete extra points for same word */ if (x + 1 > 14 || m_letters[x+1][y_c] == "") {currScore -= m_letterBonus[x][y_c] * m_lettersPoints[m_letters[x][y_c]]; currWordBonus /= m_wordBonus[x][y_c];}
+            if(m_letters[x][y_c] == "") /* Add only new words */
+            {
+                for (int x_c = x-1; x_c >= 0 && m_letters[x_c][y_c] != ""; x_c--) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
+                for (int x_c = x; x_c <= 14 && m_letters[x_c][y_c] != ""; x_c++) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
+                /* Delete extra points for same word */ if (x + 1 > 14 || m_letters[x+1][y_c] == "") {currScore -= m_letterBonus[x][y_c] * m_lettersPoints[m_letters[x][y_c]]; currWordBonus /= m_wordBonus[x][y_c];}
+            }
         }
         score += currScore * currWordBonus;
     }
@@ -168,6 +174,7 @@ int Board::countScore(int x, int y, std::vector < std::string > word, bool orien
 
 std::pair < bool, int > Board::checkCorrectness(int x, int y, std::vector < std::string > word , bool orientation, std::vector < std::string > playersLetters)
 {
+    bool isNeighbour = false;
     /* Checking if the word fits in the board */
     if (x < 0 || x >= 15) return {false, OUTREACHBOARD};
     if (y < 0 || y >= 15) return {false, OUTREACHBOARD};
@@ -198,6 +205,7 @@ std::pair < bool, int > Board::checkCorrectness(int x, int y, std::vector < std:
                 }
                 if (!find) return {false, MISSINGLETTERS};
             }
+            else isNeighbour = true;
         }
     if (orientation == HORIZONTAL)
         for (unsigned int x_c = x; x_c - x < word.size(); x_c++)
@@ -216,6 +224,7 @@ std::pair < bool, int > Board::checkCorrectness(int x, int y, std::vector < std:
                 }
                 if (!find) return {false, MISSINGLETTERS};
             }
+            else isNeighbour = true;
         }
 
     /* Checking correctness of all new words */
@@ -227,22 +236,21 @@ std::pair < bool, int > Board::checkCorrectness(int x, int y, std::vector < std:
     prefix.resize(0); sufix.resize(0);
 
     /* Check if word has a neighbour */
-    bool temp = false;
     if (orientation == VERTICAL)
     {
-        if (y>0 && m_letters[x][y-1] != "") temp = true;
-        if (y+word.size() < 15 && m_letters[x][y+word.size()] != "") temp = true;
-        for (unsigned int y_c = y; y_c - y < word.size(); y_c++) if (x - 1 >= 0 && m_letters[x-1][y_c] != "") temp = true;
-        for (unsigned int y_c = y; y_c - y < word.size(); y_c++) if (x + 1 < 15 && m_letters[x+1][y_c] != "") temp = true;
+        if (y>0 && m_letters[x][y-1] != "") isNeighbour = true;
+        if (y+word.size() < 15 && m_letters[x][y+word.size()] != "") isNeighbour = true;
+        for (unsigned int y_c = y; y_c - y < word.size(); y_c++) if (x - 1 >= 0 && m_letters[x-1][y_c] != "") isNeighbour = true;
+        for (unsigned int y_c = y; y_c - y < word.size(); y_c++) if (x + 1 < 15 && m_letters[x+1][y_c] != "") isNeighbour = true;
     }
     if (orientation == HORIZONTAL)
     {
-        if (x>0 && m_letters[x-1][y] != "") temp = true;
-        if (x+word.size() < 15 && m_letters[x+word.size()][y] != "") temp = true;
-        for (unsigned int x_c = x; x_c - x < word.size(); x_c++) if (y - 1 >= 0 && m_letters[x_c][y-1] != "") temp = true;
-        for (unsigned int x_c = x; x_c - x < word.size(); x_c++) if (y + 1 < 15 && m_letters[x_c][y+1] != "") temp = true;
+        if (x>0 && m_letters[x-1][y] != "") isNeighbour = true;
+        if (x+word.size() < 15 && m_letters[x+word.size()][y] != "") isNeighbour = true;
+        for (unsigned int x_c = x; x_c - x < word.size(); x_c++) if (y - 1 >= 0 && m_letters[x_c][y-1] != "") isNeighbour = true;
+        for (unsigned int x_c = x; x_c - x < word.size(); x_c++) if (y + 1 < 15 && m_letters[x_c][y+1] != "") isNeighbour = true;
     }
-    if (!temp && m_totalWords != 0) return {false, NONEIGHBOUR};
+    if (!isNeighbour && m_totalWords != 0) return {false, NONEIGHBOUR};
 
 
     /* Word fits the board, put it and check if NEW words are correct, if no take it back */
@@ -265,17 +273,17 @@ std::pair < bool, int > Board::checkCorrectness(int x, int y, std::vector < std:
             getNewWord(x_c,y,VERTICAL,&newWords);
     }
 
-    temp = true;
+    bool isCorrect = true;
     for (auto newWord:newWords) 
         if (m_dictionary[newWord] != 1)
         {
             /* Take back the word from board if it's not correct */
             if (orientation == VERTICAL) for (unsigned int y_c = y; y_c < y + word.size(); y_c++) m_letters[x][y_c] = "";
             if (orientation == HORIZONTAL) for (unsigned int x_c = x; x_c < x + word.size(); x_c++) m_letters[x_c][y] = "";
-            temp = false;
+            isCorrect = false;
         }
 
-    if (!temp) return {false, UNCORRECTWORD};
+    if (!isCorrect) return {false, UNCORRECTWORD};
     return {true, CORRECTWORD};
 
 }

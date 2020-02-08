@@ -32,8 +32,8 @@ std::string GetCapital(std::string letter)
 {
     if (letter.size() == 1)
     {
-        if (letter[0] >= 'a' && letter[0] <= 'z') letter[0]-=32;
-        return letter;
+        if (letter[0] >= 'a' && letter[0] <= 'z') {letter[0]-=32; return letter;}
+        if (letter[0] >= 'A' && letter[0] <= 'Z') return letter;
     }
     else
     {
@@ -226,7 +226,7 @@ void Game::processEvents()
                             m_enterWordLength--;
                         }
                     }
-                    else if (m_enterWordLength <= 15){m_enterWord+=GetCapital(UnicodeToUTF8(event.text.unicode)); m_enterWordLength++;}
+                    else if (m_enterWordLength <= 15){m_enterWord+=GetCapital(UnicodeToUTF8(event.text.unicode)); if (GetCapital(UnicodeToUTF8(event.text.unicode)) != "") m_enterWordLength++;}
                     m_enterWordButton->updateText(m_enterWord);
                 }
         }
