@@ -22,6 +22,9 @@ public:
 
 private:
     void draw();
+
+    void nextTurn();
+
     void processEvents();
 
     sf::RenderWindow* m_window;

@@ -12,8 +12,13 @@ Textbox::Textbox(sf::Vector2f position, sf::Vector2i size, std::string text, int
     m_text.setFillColor(sf::Color(255, 242, 230));
 
     sf::FloatRect textRect = m_text.getLocalBounds();
-    m_text.setOrigin(textRect.left + textRect.width / 2.0f,0);
+    m_text.setOrigin(textRect.left + textRect.width / 2.f,0);
     m_text.setPosition(sf::Vector2f((position.x + size.x/2.f), position.y + size.y / 4));
+
+    m_background.setPosition(m_position);
+    m_background.setSize(sf::Vector2f(size.x,size.y));
+    m_background.setFillColor(sf::Color(0, 66, 42));
+
 }
 
 Textbox::~Textbox()
@@ -22,12 +27,17 @@ Textbox::~Textbox()
 
 sf::Sprite* Textbox::getSpritePointer()
 {
-    return &m_Sprite;
+    return &m_sprite;
 }
 
 sf::Text* Textbox::getTextPointer()
 {
     return &m_text;
+}
+
+sf::RectangleShape* Textbox::getBackgroundPointer()
+{
+    return &m_background;
 }
 
 void Textbox::updateText(std::string text)
@@ -43,9 +53,9 @@ void Textbox::updateText(std::string text)
 
 void Textbox::setImage(std::string Texture_src)
 {
-    m_Texture.loadFromFile(Texture_src);
+    m_texture.loadFromFile(Texture_src);
 
-    m_Sprite.setTexture(m_Texture);
+    m_sprite.setTexture(m_texture);
 
-    m_Sprite.setPosition(m_position);
+    m_sprite.setPosition(m_position);
 }

@@ -3,6 +3,8 @@
 Button::Button(sf::Vector2f position, sf::Vector2i size, std::string text, int characterSize) : Textbox(position,size,text,characterSize)
 {
     m_press = false;
+
+    m_hover = false;
 }
 
 Button::~Button()
@@ -22,9 +24,10 @@ bool Button::check(sf::Vector2i mousePosition)
     else return false;
 }
 
-void Button::update(sf::Vector2i mousePosition, bool buttonPressed)
+void Button::updatePress(sf::Vector2i mousePosition, bool buttonPressed)
 {
-    if (check(mousePosition) && buttonPressed) m_press = true;
+    m_hover = check(mousePosition);
+    if (m_hover && buttonPressed) m_press = true;
     else if (check(mousePosition) && !buttonPressed)
     {
         m_press = false;
@@ -32,7 +35,17 @@ void Button::update(sf::Vector2i mousePosition, bool buttonPressed)
     else m_press = false;
 }
 
+void Button::updateHover(sf::Vector2i mousePosition)
+{
+    m_hover = check(mousePosition);
+}
+
 bool Button::isPressed()
 {
     return m_press;
+}
+
+bool Button::isHover()
+{
+    return m_hover;
 }

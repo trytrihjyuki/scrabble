@@ -49,5 +49,3 @@ private:
     bool m_exitMenu;
     bool m_optionsActivate;
 };
-
-// std::string UnicodeToUTF8(unsigned int codepoint);

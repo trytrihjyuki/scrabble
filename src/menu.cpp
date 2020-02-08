@@ -10,13 +10,13 @@ Menu::Menu(size_t width, size_t height)
     m_window->create(sf::VideoMode(static_cast<int>(m_windowWidth), static_cast<int>(m_windowHeight)), "scrabble", sf::Style::Close);
     m_window->setFramerateLimit(60);
 
-    m_startButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 2.3f - 50), sf::Vector2i(300, 75.f),"START",40);
-    m_optionButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 1.7f - 50), sf::Vector2i(300, 75.f), "OPTIONS",40);
-    m_exitButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 1.7f + 200 - 50), sf::Vector2i(300, 75.f), "EXIT",40);
+    m_startButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 2.3f - 50), sf::Vector2i(250, 75.f),"START",40);
+    m_optionButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 1.7f - 50), sf::Vector2i(250, 75.f), "OPTIONS",40);
+    m_exitButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 1.7f + 200 - 50), sf::Vector2i(250, 75.f), "EXIT",40);
 
     for (int i=0; i<4; i++){ 
         m_players[i] = new Player("PLAYER "+std::to_string(i));
-        m_playersButtons[i][0] = new Button(sf::Vector2f(m_window->getSize().x / 4.f, m_window->getSize().y / 4.f + i*119), sf::Vector2i(300, 75.f), m_players[i]->getName(),50);
+        m_playersButtons[i][0] = new Button(sf::Vector2f(m_window->getSize().x / 4.9f, m_window->getSize().y / 4.f + i*119), sf::Vector2i(400, 75.f), m_players[i]->getName(),50);
         m_playersButtons[i][1] = new Button(sf::Vector2f(m_window->getSize().x / 2.f, m_window->getSize().y / 4.f + i*120), sf::Vector2i(350, 100.f), m_players[i]->getName(),0);
         m_playersButtons[i][1]->setImage("static/human_button.png");
     }
@@ -53,9 +53,11 @@ void Menu::draw()
     m_window->clear(sf::Color(0, 99, 64));
     if (m_optionsActivate)
     {
+        if (m_exitOptionButton->isHover()) m_window->draw(*m_exitOptionButton->getBackgroundPointer());
         m_window->draw(*m_titleOptions->getTextPointer());
         m_window->draw(*m_exitOptionButton->getTextPointer());
         for (int i = 0; i < 4; i++){
+            if (m_playersButtons[i][0]->isHover() || m_playersButtons[i][0]->isPressed()) m_window->draw(*m_playersButtons[i][0]->getBackgroundPointer());
             m_window->draw(*m_playersButtons[i][0]->getTextPointer());
             m_window->draw(*m_playersButtons[i][1]->getSpritePointer());
         }
@@ -64,6 +66,9 @@ void Menu::draw()
     }
     m_window->draw(m_logoSprite);
 
+    if (m_startButton->isHover()) m_window->draw(*m_startButton->getBackgroundPointer());
+    if (m_optionButton->isHover()) m_window->draw(*m_optionButton->getBackgroundPointer());
+    if (m_exitButton->isHover()) m_window->draw(*m_exitButton->getBackgroundPointer());
     m_window->draw(*m_startButton->getTextPointer());
     m_window->draw(*m_optionButton->getTextPointer());
     m_window->draw(*m_exitButton->getTextPointer());
@@ -87,22 +92,24 @@ void Menu::processEvents()
         if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) /*Do not take input after click out of box */
         {
             for (int i = 0; i < 4; i++){
-                m_playersButtons[i][0]->update(sf::Mouse::getPosition(*m_window), false);
-                m_playersButtons[i][1]->update(sf::Mouse::getPosition(*m_window), false);
+                m_playersButtons[i][0]->updatePress(sf::Mouse::getPosition(*m_window), false);
+                m_playersButtons[i][1]->updatePress(sf::Mouse::getPosition(*m_window), false);
             }
         }
 
         if (m_optionsActivate)
         {
+            for (int i = 0; i < 4; i++) m_playersButtons[i][0]->updateHover(sf::Mouse::getPosition(*m_window));
+            m_exitOptionButton->updateHover(sf::Mouse::getPosition(*m_window));
             if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
             {
-                m_exitOptionButton->update(sf::Mouse::getPosition(*m_window), false);
-                if (m_exitOptionButton->getTextPointer()->getGlobalBounds().contains(mouse))
+                m_exitOptionButton->updatePress(sf::Mouse::getPosition(*m_window), true);
+                if (m_exitOptionButton->isPressed())
                     m_optionsActivate = false;
                 /* Activation of input names */
                 for (int i = 0; i < 4; i++){
-                    m_playersButtons[i][0]->update(sf::Mouse::getPosition(*m_window), true);
-                    m_playersButtons[i][1]->update(sf::Mouse::getPosition(*m_window), true);
+                    m_playersButtons[i][0]->updatePress(sf::Mouse::getPosition(*m_window), true);
+                    m_playersButtons[i][1]->updatePress(sf::Mouse::getPosition(*m_window), true);
                     if (m_playersButtons[i][0]->isPressed()) printf("[+] Clicked player %d\n",i);
                     if (m_playersButtons[i][1]->isPressed()){
                         printf("[+] Clicked switchbox player no. %d\n",i);
@@ -131,40 +138,45 @@ void Menu::processEvents()
                 }
             }
         }
-        else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
-        {
-            m_startButton->update(sf::Mouse::getPosition(*m_window), false);
-            m_optionButton->update(sf::Mouse::getPosition(*m_window), false);
-            m_exitButton->update(sf::Mouse::getPosition(*m_window), false);
-            if (m_startButton->getTextPointer()->getGlobalBounds().contains(mouse))
+        else {
+            m_startButton->updateHover(sf::Mouse::getPosition(*m_window));
+            m_optionButton->updateHover(sf::Mouse::getPosition(*m_window));
+            m_exitButton->updateHover(sf::Mouse::getPosition(*m_window));
+            if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
             {
-                printf("[+] Starting game\n");
-                game = new Game(m_window, m_players);
-                game->run();
-                printf("[+] Ending game\n");
-                delete game;
-                return;
-            }
-            else
-            {
-                if (m_optionButton->getTextPointer()->getGlobalBounds().contains(mouse))
+                m_startButton->updatePress(sf::Mouse::getPosition(*m_window), true);
+                m_optionButton->updatePress(sf::Mouse::getPosition(*m_window), true);
+                m_exitButton->updatePress(sf::Mouse::getPosition(*m_window), true);
+                if (m_startButton->isPressed())
+                {
+                    printf("[+] Starting game\n");
+                    game = new Game(m_window, m_players);
+                    game->run();
+                    printf("[+] Ending game\n");
+                    delete game;
+                    return;
+                }
+                else
+                {
+                    if (m_optionButton->isPressed())
                     m_optionsActivate = true;
 
-                if (m_exitButton->getTextPointer()->getGlobalBounds().contains(mouse))
-                    m_exitMenu = true;
+                  if (m_exitButton->isPressed())
+                        m_exitMenu = true;
+                }
             }
         }
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
-        {
-            if (m_optionsActivate)
-            {
-                printf("[+] Running options\n");
-                break;
-            }
+        // if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        // {
+        //     if (m_optionsActivate)
+        //     {
+        //         printf("[+] Running options\n");
+        //         break;
+        //     }
 
-            m_startButton->update(sf::Mouse::getPosition(*m_window), true);
-            m_optionButton->update(sf::Mouse::getPosition(*m_window), true);
-        }
+        //     m_startButton->updatePress(sf::Mouse::getPosition(*m_window), true);
+        //     m_optionButton->updatePress(sf::Mouse::getPosition(*m_window), true);
+        // }
 
 
         if (m_optionsActivate)

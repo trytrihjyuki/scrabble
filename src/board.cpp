@@ -3,7 +3,7 @@
 Board::Board(sf::RenderWindow* window)
 {
     /* Board texture */
-    m_boardTexture.loadFromFile("static/plansza.png");
+    m_boardTexture.loadFromFile("static/board.png");
     m_boardTexture.setSmooth(true);
     m_boardSprite.setTexture(m_boardTexture);
     m_boardSprite.setScale(sf::Vector2f((float)window->getSize().y / (float)m_boardTexture.getSize().y / 1.4f, (float)window->getSize().y / (float)m_boardTexture.getSize().y / 1.4f));

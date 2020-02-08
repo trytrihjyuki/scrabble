@@ -92,6 +92,9 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     // m_board->addWord(4,5,baba,HORIZONTAL, m_window);
     // m_board->addWord(6,4,obiad,VERTICAL, m_window);
     /* End of debug */
+
+    /* Initialize first player */
+    nextTurn();
 }
 
 Game::~Game()
@@ -137,16 +140,20 @@ void Game::draw()
     m_window->display();
 }
 
-void Game::processEvents()
+void Game::nextTurn()
 {
-    sf::Event event;
-    sf::Vector2f mouse = sf::Vector2f(sf::Mouse::getPosition(*m_window).x, sf::Mouse::getPosition(*m_window).y);
+    m_turn = (m_turn+1) % m_playersNumber;
 
     Player* activePlayer = m_players[m_turn];
     m_activePlayerName->updateText(activePlayer->getName());
     std::vector < std::string > activePlayerLetters = activePlayer->getLetters();
     for(unsigned int i = 0; i < activePlayerLetters.size(); i++) m_activePlayerTiles[i]->setImage(std::string("static/letters/pl/") + activePlayerLetters[i] + ".png");
-    // for(int i = activePlayerLetters.size(); i < m_activePlayerTiles.size(); i++) 
+}
+
+void Game::processEvents()
+{
+    sf::Event event;
+    sf::Vector2f mouse = sf::Vector2f(sf::Mouse::getPosition(*m_window).x, sf::Mouse::getPosition(*m_window).y);
 
     while (m_window->pollEvent(event))
     {
@@ -159,14 +166,14 @@ void Game::processEvents()
 
         if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) /*Do not take input after click out of box */
         {
-            m_enterWordButton->update(sf::Mouse::getPosition(*m_window), false);
+            m_enterWordButton->updatePress(sf::Mouse::getPosition(*m_window), false);
         }
 
         /* Mouse handle */
         if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
         {
             /* Activation of input names */
-            m_enterWordButton->update(sf::Mouse::getPosition(*m_window), true);
+            m_enterWordButton->updatePress(sf::Mouse::getPosition(*m_window), true);
             if(m_enterWordButton->isPressed()) printf("[+] Enter word typing ON \n");
         }
 

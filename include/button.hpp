@@ -13,9 +13,16 @@ public:
 
     bool check(sf::Vector2i mousePosition);
 
-    void update(sf::Vector2i mousePosition, bool buttonPressed);
+    void updatePress(sf::Vector2i mousePosition, bool buttonPressed);
+
+    void updateHover(sf::Vector2i mousePosition);
 
     bool isPressed();
+
+    bool isHover();
+
 private:
-    bool m_press = false;
+    bool m_press;
+
+    bool m_hover;
 };
