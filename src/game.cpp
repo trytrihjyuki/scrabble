@@ -65,6 +65,7 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
 
     m_endGame = 0;
     m_typedWord = "";
+    m_typedWordLength = 0;
 
     m_board = new Board(m_window);
 
@@ -186,9 +187,10 @@ void Game::processEvents()
                         {
                             if (m_typedWord.size() > 2 && (m_typedWord[m_typedWord.size()-1] > 'Z' || m_typedWord[m_typedWord.size()-1] < 'A')) {m_typedWord.pop_back(); m_typedWord.pop_back();}
                             else  m_typedWord.pop_back();
+                            m_typedWordLength--;
                         }
                     }
-                    else if(m_typedWord.size() <= 15) m_typedWord+=GetCapital(UnicodeToUTF8(event.text.unicode));
+                    else if(m_typedWordLength <= 15){m_typedWord+=GetCapital(UnicodeToUTF8(event.text.unicode)); m_typedWordLength++;}
                     m_enterWordButton->updateText(m_typedWord);
                 }
         }

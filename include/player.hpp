@@ -31,6 +31,10 @@ public:
 
     void setName(std::string name);
 
+    void addNameLength(int diff);
+
+    int getNameLength();
+
     int getScore();
 
     void setScore(int Score);
@@ -40,6 +44,8 @@ public:
     void setRandomLetters(std::vector < std::string >* letterBag);
 private:
     std::string m_name;
+    int m_nameLength;
+
     bool m_activate;
     bool m_human;
 

@@ -126,13 +126,17 @@ void Menu::processEvents()
                         if (event.text.unicode == '\b'){
                             if (!m_players[i]->getName().empty()){
                                 std::string temp = m_players[i]->getName();
-                                temp.pop_back();
+                                if (temp.size() > 2 && (temp[temp.size()-1] > 'Z' || temp[temp.size()-1] < 'A')) {temp.pop_back(); temp.pop_back();}
+                                else  temp.pop_back();
                                 m_players[i]->setName(temp);
+                                m_players[i]->addNameLength(-1);
                             }
                         }
-                        else if (m_players[i]->getName().size() < 10)
+                        else if (m_players[i]->getNameLength() < 10)
+                        {
                             m_players[i]->setName(m_players[i]->getName()+GetCapital(UnicodeToUTF8(event.text.unicode)));
-
+                            m_players[i]->addNameLength(1);
+                        }
                         m_playersButtons[i][0]->updateText(m_players[i]->getName());
                     }
                 }
@@ -166,18 +170,6 @@ void Menu::processEvents()
                 }
             }
         }
-        // if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
-        // {
-        //     if (m_optionsActivate)
-        //     {
-        //         printf("[+] Running options\n");
-        //         break;
-        //     }
-
-        //     m_startButton->updatePress(sf::Mouse::getPosition(*m_window), true);
-        //     m_optionButton->updatePress(sf::Mouse::getPosition(*m_window), true);
-        // }
-
 
         if (m_optionsActivate)
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))

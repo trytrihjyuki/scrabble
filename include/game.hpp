@@ -47,6 +47,7 @@ private:
     Textbox* m_enterWordHeader;
     Button* m_enterWordButton;
     std::string m_typedWord;
+    int m_typedWordLength;
 
     bool m_exitGame;
     bool m_endGame;

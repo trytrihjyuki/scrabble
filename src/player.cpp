@@ -1,45 +1,67 @@
 #include "player.hpp"
 
-Player::Player(std::string name){
+Player::Player(std::string name)
+{
     m_name = name;
+    m_nameLength = name.size(); 
+
     m_activate = 1;
     m_human = 1;
     m_score = 0;
 }
 
-Player::~Player(){
+Player::~Player()
+{
 
 }
 
-bool Player::getActivate(){
+bool Player::getActivate()
+{
     return m_activate;
 }
 
-void Player::setActivate(bool activate){
+void Player::setActivate(bool activate)
+{
     m_activate = activate;
 }
 
-bool Player::getHuman(){
+bool Player::getHuman()
+{
     return m_human;
 }
 
-void Player::setHuman(bool human){
+void Player::setHuman(bool human)
+{
     m_human = human;
 }
 
-std::string Player::getName(){
+std::string Player::getName()
+{
     return m_name;
 }
 
-void Player::setName(std::string name){
+void Player::setName(std::string name)
+{
     m_name = name;
 }
 
-int Player::getScore(){
+void Player::addNameLength(int diff)
+{
+    m_nameLength+=diff;
+}
+
+int Player::getNameLength()
+{
+    return m_nameLength;
+}
+
+int Player::getScore()
+{
     return m_score;
 }
 
-void Player::setScore(int score){
+void Player::setScore(int score)
+{
     m_score = score;
 }
 
