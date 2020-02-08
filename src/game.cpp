@@ -32,20 +32,20 @@ std::string GetCapital(std::string letter)
 {
     if (letter.size() == 1)
     {
-        if(letter[0] >= 'a' && letter[0] <= 'z') letter[0]-=32;
+        if (letter[0] >= 'a' && letter[0] <= 'z') letter[0]-=32;
         return letter;
     }
     else
     {
-        if(letter == "ą" || letter == "Ą") return "Ą";
-        if(letter == "ę" || letter == "Ę") return "Ę";
-        if(letter == "ł" || letter == "Ł") return "Ł";
-        if(letter == "ó" || letter == "Ó") return "Ó";
-        if(letter == "ć" || letter == "Ć") return "Ć";
-        if(letter == "ń" || letter == "Ń") return "Ń";
-        if(letter == "ś" || letter == "Ś") return "Ś";
-        if(letter == "ż" || letter == "Ż") return "Ż";
-        if(letter == "ź" || letter == "Ź") return "Ź";
+        if (letter == "ą" || letter == "Ą") return "Ą";
+        if (letter == "ę" || letter == "Ę") return "Ę";
+        if (letter == "ł" || letter == "Ł") return "Ł";
+        if (letter == "ó" || letter == "Ó") return "Ó";
+        if (letter == "ć" || letter == "Ć") return "Ć";
+        if (letter == "ń" || letter == "Ń") return "Ń";
+        if (letter == "ś" || letter == "Ś") return "Ś";
+        if (letter == "ż" || letter == "Ż") return "Ż";
+        if (letter == "ź" || letter == "Ź") return "Ź";
     }
 
     return "";
@@ -64,8 +64,8 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     m_turn = rand()%m_playersNumber;
 
     m_endGame = 0;
-    m_typedWord = "";
-    m_typedWordLength = 0;
+    m_enterWord = "";
+    m_enterWordLength = 0;
 
     m_board = new Board(m_window);
 
@@ -85,8 +85,10 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     m_enterWordButton = new Button(sf::Vector2f(m_window->getSize().x / 3.6f, m_window->getSize().y / 1.18f), sf::Vector2i(549, 72), "WORD",30);
     m_enterWordButton->setImage("static/enter_word.png");
 
+    m_enterOrientation = VERTICAL;
+
     /*Test letter*/
-    m_board->debugRANDOMBOARD(m_window);
+    m_board->debugRANDOMBOARD();
     // std::vector < std::string > obiad = {"O", "B", "I", "A", "D"};
     // std::vector < std::string > baba = {"B","A","B","A"};
     // m_board->addWord(4,4,obiad,VERTICAL, m_window);
@@ -121,8 +123,8 @@ void Game::draw()
 
     /* Draw score table */
     m_window->draw(*m_scoreHeader->getTextPointer());
-    for (int i=0; i<4; i++) m_window->draw(*m_scoreTable[i][0]->getTextPointer());
-    for (int i=0; i<4; i++) m_window->draw(*m_scoreTable[i][1]->getTextPointer());
+    for (int i=0; i<m_playersNumber; i++) m_window->draw(*m_scoreTable[i][0]->getTextPointer());
+    for (int i=0; i<m_playersNumber; i++) m_window->draw(*m_scoreTable[i][1]->getTextPointer());
 
     /* Draw active player stuff */
     m_window->draw(*m_activePlayerName->getTextPointer());
@@ -149,6 +151,10 @@ void Game::nextTurn()
     m_activePlayerName->updateText(activePlayer->getName());
     std::vector < std::string > activePlayerLetters = activePlayer->getLetters();
     for(unsigned int i = 0; i < activePlayerLetters.size(); i++) m_activePlayerTiles[i]->setImage(std::string("static/letters/pl/") + activePlayerLetters[i] + ".png");
+
+    m_enterWordButton->updateText("WORD");
+    m_enterWord = "";
+    m_enterWordLength = 0;
 }
 
 void Game::processEvents()
@@ -175,7 +181,37 @@ void Game::processEvents()
         {
             /* Activation of input names */
             m_enterWordButton->updatePress(sf::Mouse::getPosition(*m_window), true);
-            if(m_enterWordButton->isPressed()) printf("[+] Enter word typing ON \n");
+            if (m_enterWordButton->isPressed()) printf("[+] Enter word typing ON \n");
+
+            std::vector < std::pair <int, int> > clickedTiles; clickedTiles.resize(0);
+            for(int x=0; x<15; x++)
+            {
+                for(int y=0; y<15; y++)
+                {
+                    if (m_board->checkTilePress(x,y,sf::Mouse::getPosition(*m_window))) clickedTiles.push_back({x,y});
+                }
+            }
+
+            /* Only enter word if specific cliced */
+            if (clickedTiles.size() == 1)
+            {
+                std::vector < std::string > addedWord; addedWord.resize(0);
+                for(unsigned int i = 0; i < m_enterWord.size(); i++)
+                {
+                    std::string temp = "";
+                    if (m_enterWord[i] > 'Z' || m_enterWord[i] < 'A') {temp+=m_enterWord[i]; temp+=m_enterWord[++i];}
+                    else  temp+=m_enterWord[i];
+                    addedWord.push_back(temp);
+                }
+                int madeScore = m_board->addWord(clickedTiles[0].first,clickedTiles[0].second,addedWord,m_enterOrientation,m_players[m_turn]->getLetters());
+
+                if (madeScore) /* Succesfull added Word with non zero score */
+                {
+                    m_players[m_turn]->setScore( m_players[m_turn]->getScore() + madeScore);
+                    m_scoreTable[m_turn][1]->updateText(std::to_string(m_players[m_turn]->getScore()));
+                    nextTurn();
+                }
+            }
         }
 
         if (event.type == sf::Event::TextEntered) /* Typing players names */
@@ -183,15 +219,15 @@ void Game::processEvents()
                 if (m_enterWordButton->isPressed()){
                     if (event.text.unicode == '\b')
                     {
-                        if (!m_typedWord.empty())
+                        if (!m_enterWord.empty())
                         {
-                            if (m_typedWord.size() > 2 && (m_typedWord[m_typedWord.size()-1] > 'Z' || m_typedWord[m_typedWord.size()-1] < 'A')) {m_typedWord.pop_back(); m_typedWord.pop_back();}
-                            else  m_typedWord.pop_back();
-                            m_typedWordLength--;
+                            if (m_enterWord.size() > 2 && (m_enterWord[m_enterWord.size()-1] > 'Z' || m_enterWord[m_enterWord.size()-1] < 'A')) {m_enterWord.pop_back(); m_enterWord.pop_back();}
+                            else  m_enterWord.pop_back();
+                            m_enterWordLength--;
                         }
                     }
-                    else if(m_typedWordLength <= 15){m_typedWord+=GetCapital(UnicodeToUTF8(event.text.unicode)); m_typedWordLength++;}
-                    m_enterWordButton->updateText(m_typedWord);
+                    else if (m_enterWordLength <= 15){m_enterWord+=GetCapital(UnicodeToUTF8(event.text.unicode)); m_enterWordLength++;}
+                    m_enterWordButton->updateText(m_enterWord);
                 }
         }
     }

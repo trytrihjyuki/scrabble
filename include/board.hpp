@@ -14,6 +14,7 @@
 #include<SFML/Network.hpp>
 
 #include"textbox.hpp"
+#include"button.hpp"
 
 /* Orientation */
 #define VERTICAL 1
@@ -24,6 +25,7 @@
 #define OVERWRITEWORD 1
 #define UNCORRECTWORD 2
 #define NONEIGHBOUR 3
+#define MISSINGLETTERS 4
 #define CORRECTWORD 5
 
 
@@ -35,20 +37,22 @@ public:
 
     void draw(sf::RenderWindow* window);
 
-    int addWord(int x, int y, std::vector < std::string > word, bool orientation, sf::RenderWindow* window);
+    bool checkTilePress(int x, int y, sf::Vector2i mousePosition);
+
+    int addWord(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters);
 
     int countScore(int x, int y, std::vector < std::string > word, bool orientation);
-    void debugRANDOMBOARD(sf::RenderWindow* window);
+    void debugRANDOMBOARD();
 
 private:
-    std::pair < bool, int > checkCorrectness(int x, int y, std::vector < std::string > word, bool orientation);
+    std::pair < bool, int > checkCorrectness(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters);
 
     void getNewWord(int x, int y, bool orientation, std::vector < std::string >* newWords);
 
     sf::Texture m_boardTexture;
     sf::Sprite m_boardSprite;
 
-    Textbox* m_lettersImg[15][15];
+    Button* m_lettersTiles[15][15];
     std::string m_letters[15][15];
     int m_letterBonus[15][15];
     int m_wordBonus[15][15];
