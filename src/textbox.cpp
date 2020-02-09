@@ -10,6 +10,7 @@ Textbox::Textbox(sf::Vector2f position, sf::Vector2i size, std::string text, int
     m_text.setString(text);
     m_text.setCharacterSize(characterSize);
     m_text.setFillColor(sf::Color(255, 242, 230));
+    m_text.setOutlineThickness(1);
 
     sf::FloatRect textRect = m_text.getLocalBounds();
     m_text.setOrigin(textRect.left + textRect.width / 2.f,0);

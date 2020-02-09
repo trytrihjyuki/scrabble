@@ -196,11 +196,23 @@ std::pair < bool, int > Board::checkCorrectness(int x, int y, std::vector < std:
                 bool find = 0;
                 for (unsigned int i = 0; i < playersLetters.size(); i++)
                 {
-                    if(word[y_c-y] == playersLetters[i] || playersLetters[i] == "_")
+                    if(word[y_c-y] == playersLetters[i])
                     {
                         find = 1;
                         playersLetters.erase(playersLetters.begin() + i);
                         break;
+                    }
+                }
+                if (!find)
+                {
+                    for (unsigned int i = 0; i < playersLetters.size(); i++)
+                    {
+                        if (playersLetters[i] == "_")
+                        {
+                            find = 1;
+                            playersLetters.erase(playersLetters.begin() + i);
+                            break;
+                        }
                     }
                 }
                 if (!find) return {false, MISSINGLETTERS};
@@ -220,6 +232,18 @@ std::pair < bool, int > Board::checkCorrectness(int x, int y, std::vector < std:
                         find = 1;
                         playersLetters.erase(playersLetters.begin() + i);
                         break;
+                    }
+                }
+                if (!find)
+                {
+                    for (unsigned int i = 0; i < playersLetters.size(); i++)
+                    {
+                        if (playersLetters[i] == "_")
+                        {
+                            find = 1;
+                            playersLetters.erase(playersLetters.begin() + i);
+                            break;
+                        }
                     }
                 }
                 if (!find) return {false, MISSINGLETTERS};
