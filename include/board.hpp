@@ -26,8 +26,9 @@
 #define UNCORRECTWORD 2
 #define NONEIGHBOUR 3
 #define MISSINGLETTERS 4
-#define CORRECTWORD 5
-#define CORRECTWORD50BONUS 6
+#define SAMEWORD 5
+#define CORRECTWORD 6
+#define CORRECTWORD50BONUS 7
 
 
 class Board
@@ -42,11 +43,11 @@ public:
 
     int addWord(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters);
 
-    int countScore(int x, int y, std::vector < std::string > word, bool orientation);
+    int countScore(int x, int y, std::vector < std::string > word, bool orientation, std::vector <int> blanks);
     void debugRANDOMBOARD();
 
 private:
-    std::pair < bool, int > checkCorrectness(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters);
+    std::pair < bool, std::pair < int, std::vector <int> > > checkCorrectness(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters);
 
     void getNewWord(int x, int y, bool orientation, std::vector < std::string >* newWords);
 
