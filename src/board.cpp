@@ -102,6 +102,9 @@ int Board::addWord(int x, int y, std::vector < std::string > word, bool orientat
             case SAMEWORD:
                 printf("[-] It is not a new word.\n");
                 break;
+            case NOMIDDLEFIRSTWORD:
+                printf("[-] First word must be on middle.\n");
+                break;
         }
 
         return response.first;
@@ -308,7 +311,13 @@ std::pair < bool, std::pair < int, std::vector <int> > > Board::checkCorrectness
     }
     if (!isNeighbour && m_totalWords != 0) return {false, {NONEIGHBOUR, usedBlanks}};
 
-
+    if (m_totalWords == 0)
+    {
+        bool isMiddle = false;
+        if (orientation == VERTICAL) for (unsigned int y_c = y; y_c < y + word.size(); y_c++) if ( x == 7 && y_c == 7) isMiddle = true;
+        if (orientation == HORIZONTAL) for (unsigned int x_c = x; x_c < x + word.size(); x_c++) if ( x_c == 7 && y == 7) isMiddle = true;
+        if (!isMiddle) return {false, {NOMIDDLEFIRSTWORD, usedBlanks}};
+    }
     /* Word fits the board, put it and check if NEW words are correct, if no take it back */
     if (orientation == VERTICAL) for (unsigned int y_c = y; y_c < y + word.size(); y_c++) m_letters[x][y_c] = word[y_c-y];
     if (orientation == HORIZONTAL) for (unsigned int x_c = x; x_c < x + word.size(); x_c++) m_letters[x_c][y] = word[x_c-x];
