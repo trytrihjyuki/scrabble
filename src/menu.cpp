@@ -10,6 +10,9 @@ Menu::Menu(size_t width, size_t height)
     m_window->create(sf::VideoMode(static_cast<int>(m_windowWidth), static_cast<int>(m_windowHeight)), "scrabble", sf::Style::Close);
     m_window->setFramerateLimit(60);
 
+    m_icon.loadFromFile("static/icon.png");
+    m_window->setIcon(m_icon.getSize().x, m_icon.getSize().y, m_icon.getPixelsPtr());
+
     m_startButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 2.3f - 50), sf::Vector2i(250, 75.f),"START",40);
     m_optionButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 1.7f - 50), sf::Vector2i(250, 75.f), "OPTIONS",40);
     m_exitButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 1.7f + 200 - 50), sf::Vector2i(250, 75.f), "EXIT",40);

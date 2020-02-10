@@ -29,6 +29,8 @@ private:
 
     sf::RenderWindow* m_window;
 
+    sf::Image m_icon;
+
     size_t m_windowHeight;
     size_t m_windowWidth;
 
