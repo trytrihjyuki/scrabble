@@ -51,6 +51,8 @@ private:
 
     Button* m_skipButton;
     Button* m_changeButton;
+    Button* m_horizontalButton;
+    Button* m_verticalButton;
 
     bool m_enterOrientation;
 

@@ -40,6 +40,11 @@ void Button::updateHover(sf::Vector2i mousePosition)
     m_hover = check(mousePosition);
 }
 
+void Button::setPressed(bool buttonPressed)
+{
+    m_press = buttonPressed;
+}
+
 bool Button::isPressed()
 {
     return m_press;

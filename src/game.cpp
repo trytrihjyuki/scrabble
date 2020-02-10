@@ -85,11 +85,14 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     m_enterWordButton = new Button(sf::Vector2f(m_window->getSize().x / 3.6f, m_window->getSize().y / 1.18f), sf::Vector2i(549, 72), "WORD",30);
     m_enterWordButton->setImage("static/enter_word.png");
 
-    m_skipButton = new Button(sf::Vector2f(m_window->getSize().x / 1.4f, m_window->getSize().y / 1.205f), sf::Vector2i(100, 100),"",0);
+    m_skipButton = new Button(sf::Vector2f(m_window->getSize().x / 1.2f, m_window->getSize().y / 1.205f), sf::Vector2i(100, 100),"",0);
     m_skipButton->setImage("static/skip_button.png");
-    m_changeButton = new Button(sf::Vector2f(m_window->getSize().x / 1.25f, m_window->getSize().y / 1.205f), sf::Vector2i(100, 100),"",0);
+    m_changeButton = new Button(sf::Vector2f(m_window->getSize().x / 1.11f, m_window->getSize().y / 1.205f), sf::Vector2i(100, 100),"",0);
     m_changeButton->setImage("static/change_button.png");
+    m_horizontalButton = new Button(sf::Vector2f(m_window->getSize().x / 1.45f, m_window->getSize().y / 1.235f), sf::Vector2i(180, 50),"HORIZONTAL",25);
+    m_verticalButton = new Button(sf::Vector2f(m_window->getSize().x / 1.45f, m_window->getSize().y / 1.125f), sf::Vector2i(180, 50),"VERTICAL",25);
 
+    m_verticalButton->setPressed(true);
     m_enterOrientation = VERTICAL;
 
     /*Test letter*/
@@ -134,6 +137,10 @@ void Game::draw()
     /* Enter word and action buttons */
     m_window->draw(*m_skipButton->getSpritePointer());
     m_window->draw(*m_changeButton->getSpritePointer());
+    if (m_verticalButton->isPressed() || m_verticalButton->isHover()) m_window->draw(*m_verticalButton->getBackgroundPointer());
+    if (m_horizontalButton->isPressed() || m_horizontalButton->isHover()) m_window->draw(*m_horizontalButton->getBackgroundPointer());
+    m_window->draw(*m_horizontalButton->getTextPointer());
+    m_window->draw(*m_verticalButton->getTextPointer());
 
     m_window->draw(*m_enterWordHeader->getTextPointer());
     m_window->draw(*m_enterWordButton->getSpritePointer());
@@ -176,6 +183,10 @@ void Game::processEvents()
             m_enterWordButton->updatePress(sf::Mouse::getPosition(*m_window), false);
         }
 
+        /* Update Hover */
+        m_verticalButton->updateHover(sf::Mouse::getPosition(*m_window));
+        m_horizontalButton->updateHover(sf::Mouse::getPosition(*m_window));
+
         /* Mouse handle */
         if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
         {
@@ -197,7 +208,19 @@ void Game::processEvents()
                 
             }
 
-
+            /* Activation orientation buttons */
+            m_verticalButton->updatePress(sf::Mouse::getPosition(*m_window), true);
+            m_horizontalButton->updatePress(sf::Mouse::getPosition(*m_window), true);
+            if (!m_verticalButton->isPressed() && !m_horizontalButton->isPressed())
+            {
+                if (m_enterOrientation == VERTICAL) m_verticalButton->setPressed(true);
+                if (m_enterOrientation == HORIZONTAL) m_horizontalButton->setPressed(true);
+            }
+            else
+            {
+                if (m_verticalButton->isPressed()) m_enterOrientation = VERTICAL;
+                else m_enterOrientation = HORIZONTAL;
+            }
             std::vector < std::pair <int, int> > clickedTiles; clickedTiles.resize(0);
             for(int x=0; x<15; x++)
             {

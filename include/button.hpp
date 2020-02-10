@@ -17,6 +17,8 @@ public:
 
     void updateHover(sf::Vector2i mousePosition);
 
+    void setPressed(bool buttonPressed);
+
     bool isPressed();
 
     bool isHover();
