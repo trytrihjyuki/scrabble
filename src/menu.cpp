@@ -126,7 +126,7 @@ void Menu::processEvents()
                         if (event.text.unicode == '\b'){
                             if (!m_players[i]->getName().empty()){
                                 std::string temp = m_players[i]->getName();
-                                if (temp.size() > 2 && (temp[temp.size()-1] > 'Z' || temp[temp.size()-1] < 'A')) {temp.pop_back(); temp.pop_back();}
+                                if (temp.size() >= 2 && (temp[temp.size()-1] > 'Z' || temp[temp.size()-1] < 'A')) {temp.pop_back(); temp.pop_back();}
                                 else  temp.pop_back();
                                 m_players[i]->setName(temp);
                                 m_players[i]->addNameLength(-1);

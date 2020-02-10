@@ -14,7 +14,7 @@ Textbox::Textbox(sf::Vector2f position, sf::Vector2i size, std::string text, int
 
     sf::FloatRect textRect = m_text.getLocalBounds();
     m_text.setOrigin(textRect.left + textRect.width / 2.f,0);
-    m_text.setPosition(sf::Vector2f((position.x + size.x/2.f), position.y + size.y / 4));
+    m_text.setPosition(sf::Vector2f(position.x + size.x/2.f, position.y + size.y/5.f));
 
     m_background.setPosition(m_position);
     m_background.setSize(sf::Vector2f(size.x,size.y));

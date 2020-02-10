@@ -49,6 +49,9 @@ private:
     std::string m_enterWord;
     int m_enterWordLength;
 
+    Button* m_skipButton;
+    Button* m_changeButton;
+
     bool m_enterOrientation;
 
     bool m_exitGame;

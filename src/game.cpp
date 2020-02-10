@@ -80,21 +80,20 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     m_playerTilesHeader = new Textbox(sf::Vector2f(m_window->getSize().x / 6.2f, m_window->getSize().y / 1.35f), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f),"YOUR TILES:",30);
     for (int i=0; i<7; i++) m_activePlayerTiles.push_back(new Textbox(sf::Vector2f(m_window->getSize().x / 3.2f + i*60, m_window->getSize().y / 1.3f), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f), "",0));
 
-    /* Enter Word */
+    /* Enter word and action buttons */
     m_enterWordHeader = new Textbox(sf::Vector2f(m_window->getSize().x / 6.2f, m_window->getSize().y / 1.2f), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f),"ENTER WORD:",30);
     m_enterWordButton = new Button(sf::Vector2f(m_window->getSize().x / 3.6f, m_window->getSize().y / 1.18f), sf::Vector2i(549, 72), "WORD",30);
     m_enterWordButton->setImage("static/enter_word.png");
+
+    m_skipButton = new Button(sf::Vector2f(m_window->getSize().x / 1.4f, m_window->getSize().y / 1.205f), sf::Vector2i(100, 100),"",0);
+    m_skipButton->setImage("static/skip_button.png");
+    m_changeButton = new Button(sf::Vector2f(m_window->getSize().x / 1.25f, m_window->getSize().y / 1.205f), sf::Vector2i(100, 100),"",0);
+    m_changeButton->setImage("static/change_button.png");
 
     m_enterOrientation = VERTICAL;
 
     /*Test letter*/
     m_board->debugRANDOMBOARD();
-    // std::vector < std::string > obiad = {"O", "B", "I", "A", "D"};
-    // std::vector < std::string > baba = {"B","A","B","A"};
-    // m_board->addWord(4,4,obiad,VERTICAL, m_window);
-    // m_board->addWord(4,5,baba,HORIZONTAL, m_window);
-    // m_board->addWord(6,4,obiad,VERTICAL, m_window);
-    /* End of debug */
 
     /* Initialize first player */
     nextTurn();
@@ -133,8 +132,9 @@ void Game::draw()
     m_window->draw(*m_playerTilesHeader->getTextPointer());
 
     /* Enter word and action buttons */
-    
-    /* Enter word */
+    m_window->draw(*m_skipButton->getSpritePointer());
+    m_window->draw(*m_changeButton->getSpritePointer());
+
     m_window->draw(*m_enterWordHeader->getTextPointer());
     m_window->draw(*m_enterWordButton->getSpritePointer());
     m_window->draw(*m_enterWordButton->getTextPointer());
@@ -183,6 +183,17 @@ void Game::processEvents()
             m_enterWordButton->updatePress(sf::Mouse::getPosition(*m_window), true);
             if (m_enterWordButton->isPressed()) printf("[+] Enter word typing ON \n");
 
+            /* Activation skip and change buttons */
+            m_changeButton->updatePress(sf::Mouse::getPosition(*m_window), true);
+            m_skipButton->updatePress(sf::Mouse::getPosition(*m_window), true);
+            if (m_skipButton->isPressed())
+            {
+                printf("[+] Skipping turn.\n");
+                nextTurn();
+            }
+            if (m_changeButton->isPressed()) printf("[+] Change letters.\n");
+
+
             std::vector < std::pair <int, int> > clickedTiles; clickedTiles.resize(0);
             for(int x=0; x<15; x++)
             {
@@ -221,7 +232,7 @@ void Game::processEvents()
                     {
                         if (!m_enterWord.empty())
                         {
-                            if (m_enterWord.size() > 2 && (m_enterWord[m_enterWord.size()-1] > 'Z' || m_enterWord[m_enterWord.size()-1] < 'A')) {m_enterWord.pop_back(); m_enterWord.pop_back();}
+                            if (m_enterWord.size() >= 2 && (m_enterWord[m_enterWord.size()-1] > 'Z' || m_enterWord[m_enterWord.size()-1] < 'A')) {m_enterWord.pop_back(); m_enterWord.pop_back();}
                             else  m_enterWord.pop_back();
                             m_enterWordLength--;
                         }
