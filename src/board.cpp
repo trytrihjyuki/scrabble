@@ -121,6 +121,9 @@ int Board::addWord(int x, int y, std::vector < std::string > word, bool orientat
     if (orientation == HORIZONTAL) for (unsigned int x_c = x; x_c < x + word.size(); x_c++){m_letterBonus[x_c][y] = 1; m_wordBonus[x_c][y] = 1;}
 
     m_totalWords++;
+
+    /* Adding all letters bonud */
+    if(response.second == CORRECTWORD50BONUS) {score+=50; printf("[+] All letters used = 50 points bonus!\n");}
     printf("[+] Successfull added word with score %d!\n",score);
 
     return score;
@@ -308,6 +311,8 @@ std::pair < bool, int > Board::checkCorrectness(int x, int y, std::vector < std:
         }
 
     if (!isCorrect) return {false, UNCORRECTWORD};
+
+    if (!playersLetters.size()) return {true, CORRECTWORD50BONUS};
     return {true, CORRECTWORD};
 
 }

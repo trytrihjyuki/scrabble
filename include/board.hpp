@@ -27,6 +27,7 @@
 #define NONEIGHBOUR 3
 #define MISSINGLETTERS 4
 #define CORRECTWORD 5
+#define CORRECTWORD50BONUS 6
 
 
 class Board

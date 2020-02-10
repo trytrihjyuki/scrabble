@@ -191,7 +191,11 @@ void Game::processEvents()
                 printf("[+] Skipping turn.\n");
                 nextTurn();
             }
-            if (m_changeButton->isPressed()) printf("[+] Change letters.\n");
+            if (m_changeButton->isPressed())
+            {
+                printf("[+] Changing letters.\n");
+                
+            }
 
 
             std::vector < std::pair <int, int> > clickedTiles; clickedTiles.resize(0);
