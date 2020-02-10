@@ -110,10 +110,6 @@ int Board::addWord(int x, int y, std::vector < std::string > word, bool orientat
         return response.first;
     }
 
-    std::cout<<"USED BLANKS: \n";
-    for(auto blank: blanks) std::cout<<blank<<" ";
-    std::cout<<"\n";
-
     /* Creating word on board, counting score */
     int score = countScore(x,y,word,orientation,blanks);
     if (orientation == VERTICAL)

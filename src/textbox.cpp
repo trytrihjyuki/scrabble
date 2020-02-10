@@ -60,3 +60,8 @@ void Textbox::setImage(std::string Texture_src)
 
     m_sprite.setPosition(m_position);
 }
+
+void Textbox::setSpriteColor(sf::Color color)
+{
+    m_sprite.setColor(color);
+}

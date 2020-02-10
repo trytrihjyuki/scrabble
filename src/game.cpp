@@ -58,7 +58,7 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     m_letterBag = {"A","A","A","A","A","A","A","A","A","E","E","E","E","E","E","E","I","I","I","I","I","I","I","I","N","N","N","N","N","O","O","O","O","O","O","R","R","R","R","S","S","S","S","W","W","W","W","Z","Z","Z","Z","Z","C","C","C","D","D","D","K","K","K","L","L","L","M","M","M","P","P","P","T","T","T","Y","Y","Y","Y","B","B","G","G","H","H","J","J","Ł","Ł","U","U","Ą","Ę","F","Ó","Ś","Ż","Ć","Ń","Ź","_","_"};
 
     for (int i=0; i<4; i++) if (players[i]->getActivate())m_players.push_back(players[i]);
-    for (auto player: m_players) player->setRandomLetters(&m_letterBag);
+    for (auto player: m_players) player->setRandomLetters(&m_letterBag,7);
     m_playersNumber = m_players.size();
     srand(time(NULL));
     m_turn = rand()%m_playersNumber;
@@ -78,7 +78,7 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
     m_activePlayerHeader = new Textbox(sf::Vector2f(m_window->getSize().x / 1.2f, m_window->getSize().y / 7.f), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f),"CURRENT PLAYER:",40);
     m_activePlayerName = new Textbox(sf::Vector2f(m_window->getSize().x / 1.2f, m_window->getSize().y / 4.5f), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 9.f),m_players[m_turn]->getName(),40);
     m_playerTilesHeader = new Textbox(sf::Vector2f(m_window->getSize().x / 6.2f, m_window->getSize().y / 1.35f), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f),"YOUR TILES:",30);
-    for (int i=0; i<7; i++) m_activePlayerTiles.push_back(new Textbox(sf::Vector2f(m_window->getSize().x / 3.2f + i*60, m_window->getSize().y / 1.3f), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f), "",0));
+    for (int i=0; i<7; i++) m_activePlayerTiles.push_back(new Button(sf::Vector2f(m_window->getSize().x / 3.2f + i*60, m_window->getSize().y / 1.3f), sf::Vector2i(m_window->getSize().x / 29.75f, m_window->getSize().y / 20.145f), "",0));
 
     /* Enter word and action buttons */
     m_enterWordHeader = new Textbox(sf::Vector2f(m_window->getSize().x / 6.2f, m_window->getSize().y / 1.2f), sf::Vector2i(m_window->getSize().x / 12.f, m_window->getSize().y / 7.f),"ENTER WORD:",30);
@@ -87,13 +87,17 @@ Game::Game(sf::RenderWindow *window,Player* players[4])
 
     m_skipButton = new Button(sf::Vector2f(m_window->getSize().x / 1.2f, m_window->getSize().y / 1.205f), sf::Vector2i(100, 100),"",0);
     m_skipButton->setImage("static/skip_button.png");
+
     m_changeButton = new Button(sf::Vector2f(m_window->getSize().x / 1.11f, m_window->getSize().y / 1.205f), sf::Vector2i(100, 100),"",0);
     m_changeButton->setImage("static/change_button.png");
+
     m_horizontalButton = new Button(sf::Vector2f(m_window->getSize().x / 1.45f, m_window->getSize().y / 1.235f), sf::Vector2i(180, 50),"HORIZONTAL",25);
     m_verticalButton = new Button(sf::Vector2f(m_window->getSize().x / 1.45f, m_window->getSize().y / 1.125f), sf::Vector2i(180, 50),"VERTICAL",25);
 
     m_verticalButton->setPressed(true);
     m_enterOrientation = VERTICAL;
+
+    m_selectingLetters = false;
 
     /*Test letter*/
     m_board->debugRANDOMBOARD();
@@ -136,11 +140,13 @@ void Game::draw()
 
     /* Enter word and action buttons */
     m_window->draw(*m_skipButton->getSpritePointer());
-    m_window->draw(*m_changeButton->getSpritePointer());
     if (m_verticalButton->isPressed() || m_verticalButton->isHover()) m_window->draw(*m_verticalButton->getBackgroundPointer());
     if (m_horizontalButton->isPressed() || m_horizontalButton->isHover()) m_window->draw(*m_horizontalButton->getBackgroundPointer());
     m_window->draw(*m_horizontalButton->getTextPointer());
     m_window->draw(*m_verticalButton->getTextPointer());
+
+    m_window->draw(*m_changeButton->getSpritePointer());
+    // for (int i = 0; i < 7; i++) if (m_selectedLetters[i]) m_window->draw(*m_activePlayerTiles[i]->getBackgroundPointer());
 
     m_window->draw(*m_enterWordHeader->getTextPointer());
     m_window->draw(*m_enterWordButton->getSpritePointer());
@@ -152,12 +158,16 @@ void Game::draw()
 
 void Game::nextTurn()
 {
+    printf("\n[+] NEXT TURN!\n");
     m_turn = (m_turn+1) % m_playersNumber;
 
     Player* activePlayer = m_players[m_turn];
     m_activePlayerName->updateText(activePlayer->getName());
     std::vector < std::string > activePlayerLetters = activePlayer->getLetters();
-    for(unsigned int i = 0; i < activePlayerLetters.size(); i++) m_activePlayerTiles[i]->setImage(std::string("static/letters/pl/") + activePlayerLetters[i] + ".png");
+    for (unsigned int i = 0; i < activePlayerLetters.size(); i++) m_activePlayerTiles[i]->setImage(std::string("static/letters/pl/") + activePlayerLetters[i] + ".png");
+    for (unsigned int i = activePlayerLetters.size(); i < 7; i++) m_activePlayerTiles.pop_back();
+    for (unsigned int i = 0; i < m_activePlayerTiles.size(); i++) m_selectedLetters[i] = 0;
+    m_selectingLetters = 0;
 
     m_enterWordButton->updateText("WORD");
     m_enterWord = "";
@@ -186,7 +196,23 @@ void Game::processEvents()
         /* Update Hover */
         m_verticalButton->updateHover(sf::Mouse::getPosition(*m_window));
         m_horizontalButton->updateHover(sf::Mouse::getPosition(*m_window));
+        m_changeButton->updateHover(sf::Mouse::getPosition(*m_window));
+        m_skipButton->updateHover(sf::Mouse::getPosition(*m_window));
+        for (unsigned int i = 0; i < m_activePlayerTiles.size(); i++) m_activePlayerTiles[i]->updateHover(sf::Mouse::getPosition(*m_window));
 
+        /* Highlighting buttons */
+        if (m_skipButton->isHover()) m_skipButton->setSpriteColor(sf::Color(125,125,126));
+        else m_skipButton->setSpriteColor(sf::Color(255,255,255));
+
+        if (m_changeButton->isHover() || m_selectingLetters) m_changeButton->setSpriteColor(sf::Color(125,125,126));
+        else m_changeButton->setSpriteColor(sf::Color(255,255,255));
+
+        for (unsigned int i = 0; i < m_activePlayerTiles.size(); i++)
+        {
+            if (!m_selectingLetters) m_activePlayerTiles[i]->setSpriteColor(sf::Color(255,255,255));
+            if (m_selectingLetters && m_activePlayerTiles[i]->isHover()) m_activePlayerTiles[i]->setSpriteColor(sf::Color(0,180,90));
+            if (m_selectingLetters && !m_activePlayerTiles[i]->isHover() && !m_selectedLetters[i]) m_activePlayerTiles[i]->setSpriteColor(sf::Color(255,255,255));
+        }
         /* Mouse handle */
         if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
         {
@@ -197,15 +223,55 @@ void Game::processEvents()
             /* Activation skip and change buttons */
             m_changeButton->updatePress(sf::Mouse::getPosition(*m_window), true);
             m_skipButton->updatePress(sf::Mouse::getPosition(*m_window), true);
+
+            /* Skipping turn */
             if (m_skipButton->isPressed())
             {
                 printf("[+] Skipping turn.\n");
                 nextTurn();
             }
+
+            /* Changing letters */
             if (m_changeButton->isPressed())
             {
-                printf("[+] Changing letters.\n");
-                
+                m_selectingLetters = !m_selectingLetters;
+                if (m_selectingLetters) printf("[+] Start changing letters.\n");
+                else
+                {
+                    std::vector <std::string> lettersToChange; lettersToChange.resize(0);
+                    std::vector <std::string> lettersToSave; lettersToSave.resize(0);
+                    for (unsigned int  i = 0; i < m_activePlayerTiles.size(); i++)
+                    {
+                        if (m_selectedLetters[i]) lettersToChange.push_back(m_players[m_turn]->getLetters()[i]);
+                        else lettersToSave.push_back(m_players[m_turn]->getLetters()[i]);
+                    }
+                    if (lettersToChange.size() > m_letterBag.size()) 
+                    {
+                        printf("[-] Not enough letters in letterbag. Can't change it.\n");
+                        m_selectingLetters = 0;
+                        break;
+                    }
+                    else
+                    {
+                        printf("[+] Changing this letters:\n");
+                        for (auto letter: lettersToChange) printf("%s ",letter.c_str());
+                        m_players[m_turn]->setRandomLetters(&m_letterBag,(int)lettersToChange.size());
+                        for (auto letter: lettersToChange) m_letterBag.push_back(letter);
+                        for (auto letter: lettersToSave) m_players[m_turn]->setLetter(letter);
+                        nextTurn();
+                    }
+                }
+            }
+            if (m_selectingLetters)
+            {
+                for (auto tiles: m_activePlayerTiles) tiles->updatePress(sf::Mouse::getPosition(*m_window), true);
+                for (unsigned int i = 0; i < m_activePlayerTiles.size(); i++) if (m_activePlayerTiles[i]->isPressed()) std::cout<<"Pressed number "<<i<<"\n";
+                for (unsigned int i = 0; i < m_activePlayerTiles.size(); i++) if (m_activePlayerTiles[i]->isPressed()) m_selectedLetters[i] = !m_selectedLetters[i];
+                for (unsigned int i = 0; i < m_activePlayerTiles.size(); i++)
+                {
+                    if (m_selectedLetters[i]) m_activePlayerTiles[i]->setSpriteColor(sf::Color(0, 180, 90));
+                    else m_activePlayerTiles[i]->setSpriteColor(sf::Color(255,255,255));
+                }
             }
 
             /* Activation orientation buttons */
@@ -267,6 +333,11 @@ void Game::processEvents()
                     else if (m_enterWordLength <= 15){m_enterWord+=GetCapital(UnicodeToUTF8(event.text.unicode)); if (GetCapital(UnicodeToUTF8(event.text.unicode)) != "") m_enterWordLength++;}
                     m_enterWordButton->updateText(m_enterWord);
                 }
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        {
+                m_selectingLetters = false;
+                m_enterWordButton->setPressed(false);
         }
     }
 }

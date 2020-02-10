@@ -41,7 +41,9 @@ public:
 
     std::vector < std::string > getLetters();
 
-    void setRandomLetters(std::vector < std::string >* letterBag);
+    void setRandomLetters(std::vector < std::string >* letterBag, int n);
+
+    void setLetter(std::string letter);
 private:
     std::string m_name;
     int m_nameLength;

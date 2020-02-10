@@ -70,14 +70,19 @@ std::vector < std::string > Player::getLetters()
     return m_letters;
 }
 
-void Player::setRandomLetters(std::vector < std::string >* letterBag)
+void Player::setRandomLetters(std::vector < std::string >* letterBag, int n)
 {
     srand(time(NULL));
     std::random_shuffle (letterBag->begin(), letterBag->end());
     m_letters.clear();
-    for(int i = 0; i < std::min(7, (int)letterBag->size()); i++)
+    for(int i = 0; i < n; i++)
     {
         m_letters.push_back((*letterBag)[i]);
         letterBag->erase(letterBag->begin());
     }
+}
+
+void Player::setLetter(std::string letter)
+{
+    m_letters.push_back(letter);
 }

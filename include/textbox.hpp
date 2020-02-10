@@ -13,6 +13,8 @@ public:
 
     void setImage(std::string Texture_src);
 
+    void setSpriteColor(sf::Color color);
+
     sf::Sprite* getSpritePointer();
     sf::Text* getTextPointer();
     sf::RectangleShape* getBackgroundPointer();

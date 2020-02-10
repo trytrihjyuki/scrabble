@@ -42,7 +42,7 @@ private:
     Textbox* m_activePlayerName;
     Textbox* m_activePlayerHeader;
     Textbox* m_playerTilesHeader;
-    std::vector < Textbox* > m_activePlayerTiles;
+    std::vector < Button* > m_activePlayerTiles;
 
     Textbox* m_enterWordHeader;
     Button* m_enterWordButton;
@@ -53,6 +53,9 @@ private:
     Button* m_changeButton;
     Button* m_horizontalButton;
     Button* m_verticalButton;
+
+    bool m_selectingLetters;
+    bool m_selectedLetters[7];
 
     bool m_enterOrientation;
 
