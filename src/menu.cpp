@@ -82,7 +82,6 @@ void Menu::draw()
 void Menu::processEvents()
 {
     sf::Event event;
-    sf::Vector2f mouse = sf::Vector2f(sf::Mouse::getPosition(*m_window).x, sf::Mouse::getPosition(*m_window).y);
 
     while (m_window->pollEvent(event))
     {

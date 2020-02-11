@@ -47,6 +47,8 @@ public:
     int addWord(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters);
 
     int countScore(int x, int y, std::vector < std::string > word, bool orientation, std::vector <int> blanks);
+
+    std::vector <std::string> unusedLetters(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters);
     void debugRANDOMBOARD();
 
 private:

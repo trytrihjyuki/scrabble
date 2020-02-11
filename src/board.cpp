@@ -390,6 +390,80 @@ void Board::getNewWord(int x, int y, bool orientation, std::vector < std::string
     if (prefix.size() + sufix.size() > 1) newWords->push_back(newWord);
 }
 
+std::vector <std::string> Board::unusedLetters(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters)
+{
+    std::vector <std::string> neededLetters; neededLetters.resize(0);
+    if (orientation == VERTICAL)
+        for (unsigned int y_c = y; y_c - y < word.size(); y_c++)
+        {
+            if(y_c < 15 && m_letters[x][y_c] == "")
+            {
+                bool find = 0;
+                for (unsigned int i = 0; i < playersLetters.size(); i++)
+                {
+                    if(word[y_c-y] == playersLetters[i])
+                    {
+                        find = 1;
+                        neededLetters.push_back(playersLetters[i]);
+                        break;
+                    }
+                }
+                if (!find)
+                {
+                    for (unsigned int i = 0; i < playersLetters.size(); i++)
+                    {
+                        if (playersLetters[i] == "_")
+                        {
+                            find = 1;
+                            neededLetters.push_back(playersLetters[i]);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    if (orientation == HORIZONTAL)
+        for (unsigned int x_c = x; x_c - x < word.size(); x_c++)
+        {
+            if(x_c < 15 && m_letters[x_c][y] == "")
+            {
+                bool find = 0;
+                for (unsigned int i = 0; i < playersLetters.size(); i++)
+                {
+                    if(word[x_c-x] == playersLetters[i] || playersLetters[i] == "_")
+                    {
+                        find = 1;
+                        neededLetters.push_back(playersLetters[i]);
+                        break;
+                    }
+                }
+                if (!find)
+                {
+                    for (unsigned int i = 0; i < playersLetters.size(); i++)
+                    {
+                        if (playersLetters[i] == "_")
+                        {
+                            find = 1;
+                            neededLetters.push_back(playersLetters[i]);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+    std::vector <std::string> noneededLetters; noneededLetters.resize(0);
+    for (auto letter: playersLetters) noneededLetters.push_back(letter);
+    for (auto neededLetter: neededLetters)
+    {
+        for (unsigned int i = 0; i < noneededLetters.size(); i++)
+        {
+            if (noneededLetters[i] == neededLetter) {noneededLetters.erase(noneededLetters.begin() + i); break;}
+        }
+    }
+    return noneededLetters;
+}
+
 void Board::debugRANDOMBOARD()
 {
     srand(time(NULL));

@@ -177,7 +177,6 @@ void Game::nextTurn()
 void Game::processEvents()
 {
     sf::Event event;
-    sf::Vector2f mouse = sf::Vector2f(sf::Mouse::getPosition(*m_window).x, sf::Mouse::getPosition(*m_window).y);
 
     while (m_window->pollEvent(event))
     {
@@ -265,7 +264,7 @@ void Game::processEvents()
             if (m_selectingLetters)
             {
                 for (auto tiles: m_activePlayerTiles) tiles->updatePress(sf::Mouse::getPosition(*m_window), true);
-                for (unsigned int i = 0; i < m_activePlayerTiles.size(); i++) if (m_activePlayerTiles[i]->isPressed()) std::cout<<"Pressed number "<<i<<"\n";
+                for (unsigned int i = 0; i < m_activePlayerTiles.size(); i++) if (m_activePlayerTiles[i]->isPressed()) printf("Pressed letter no. %d\n",i);
                 for (unsigned int i = 0; i < m_activePlayerTiles.size(); i++) if (m_activePlayerTiles[i]->isPressed()) m_selectedLetters[i] = !m_selectedLetters[i];
                 for (unsigned int i = 0; i < m_activePlayerTiles.size(); i++)
                 {
@@ -307,10 +306,18 @@ void Game::processEvents()
                     else  temp+=m_enterWord[i];
                     addedWord.push_back(temp);
                 }
+
+                std::vector <std::string> lettersLeft = m_board->unusedLetters(clickedTiles[0].first,clickedTiles[0].second,addedWord,m_enterOrientation,m_players[m_turn]->getLetters());
                 int madeScore = m_board->addWord(clickedTiles[0].first,clickedTiles[0].second,addedWord,m_enterOrientation,m_players[m_turn]->getLetters());
 
                 if (madeScore != -1) /* Succesfull added Word with non zero score */
                 {
+                    printf("[+] Adding word on board, players didn't used these letters:\n");
+                    for (auto letter: lettersLeft) printf("%s ",letter.c_str());
+                    /* Adding new letters */
+                    m_players[m_turn]->setRandomLetters(&m_letterBag,std::min(m_players[m_turn]->getLetters().size() - lettersLeft.size(), m_letterBag.size()));
+                    for (auto letter: lettersLeft) m_players[m_turn]->setLetter(letter);
+
                     m_players[m_turn]->setScore( m_players[m_turn]->getScore() + madeScore);
                     m_scoreTable[m_turn][1]->updateText(std::to_string(m_players[m_turn]->getScore()));
                     nextTurn();
