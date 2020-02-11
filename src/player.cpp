@@ -82,6 +82,11 @@ void Player::setRandomLetters(std::vector < std::string >* letterBag, int n)
     }
 }
 
+void Player::makeBestMove()
+{
+    
+}
+
 void Player::setLetter(std::string letter)
 {
     m_letters.push_back(letter);

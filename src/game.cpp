@@ -309,7 +309,7 @@ void Game::processEvents()
                 }
                 int madeScore = m_board->addWord(clickedTiles[0].first,clickedTiles[0].second,addedWord,m_enterOrientation,m_players[m_turn]->getLetters());
 
-                if (madeScore) /* Succesfull added Word with non zero score */
+                if (madeScore != -1) /* Succesfull added Word with non zero score */
                 {
                     m_players[m_turn]->setScore( m_players[m_turn]->getScore() + madeScore);
                     m_scoreTable[m_turn][1]->updateText(std::to_string(m_players[m_turn]->getScore()));
@@ -336,7 +336,7 @@ void Game::processEvents()
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
         {
-                m_selectingLetters = false;
+                m_selectingLetters = false; /* Stop selecting letter to change when ESC */
                 m_enterWordButton->setPressed(false);
         }
     }

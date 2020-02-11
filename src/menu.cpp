@@ -20,7 +20,7 @@ Menu::Menu(size_t width, size_t height)
     for (int i=0; i<4; i++){ 
         m_players[i] = new Player("PLAYER "+std::to_string(i));
         m_playersButtons[i][0] = new Button(sf::Vector2f(m_window->getSize().x / 4.9f, m_window->getSize().y / 4.f + i*119), sf::Vector2i(400, 75.f), m_players[i]->getName(),50);
-        m_playersButtons[i][1] = new Button(sf::Vector2f(m_window->getSize().x / 2.f, m_window->getSize().y / 4.f + i*120), sf::Vector2i(350, 100.f), m_players[i]->getName(),0);
+        m_playersButtons[i][1] = new Button(sf::Vector2f(m_window->getSize().x / 2.f, m_window->getSize().y / 4.f + i*120), sf::Vector2i(346, 100), m_players[i]->getName(),0);
         m_playersButtons[i][1]->setImage("static/human_button.png");
     }
     m_exitOptionButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 1.7f + 200 - 50), sf::Vector2i(300, 75.f), "GO BACK",40);

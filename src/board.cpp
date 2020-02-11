@@ -70,14 +70,11 @@ bool Board::checkTilePress(int x, int y, sf::Vector2i mousePosition)
     return m_lettersTiles[x][y]->check(mousePosition);
 }
 
-int Board::addWord(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters)
+std::pair <int, std::vector <int> > Board::checkWord(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters)
 {
-
-    /* Debug */
-    printf("\nTrying to put word \"");
+    printf("\nChecking word \"");
     for (auto letter: word) std::cout<<letter;
     printf("\" on (%d,%d) cords orientated %d\n",x,y,orientation);
-    /* End of debug */
 
     std::pair < bool, std::pair <int , std::vector <int> > > response = checkCorrectness(x,y,word,orientation,playersLetters);
     std::vector <int> blanks = response.second.second;
@@ -107,11 +104,33 @@ int Board::addWord(int x, int y, std::vector < std::string > word, bool orientat
                 break;
         }
 
-        return response.first;
+        return {-1,blanks};
     }
 
     /* Creating word on board, counting score */
     int score = countScore(x,y,word,orientation,blanks);
+    /* Adding all letters bonud */
+    if(response.second.first == CORRECTWORD50BONUS) {score+=50; printf("[+] All letters used = 50 points bonus!\n");}
+    printf("[+] Successfull added word with score %d!\n",score);
+
+    return {score,blanks};
+
+}
+int Board::addWord(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters)
+{
+    printf("\nTrying to put word \"");
+    for (auto letter: word) std::cout<<letter;
+    printf("\" on (%d,%d) cords orientated %d\n",x,y,orientation);
+
+    /* Creating word on board, counting score */
+    std::pair <int, std::vector <int> > response = checkWord(x,y,word,orientation,playersLetters);
+    std::vector <int> blanks = response.second;
+    /* Unsuccessfull attend to add word */
+    if (response.first == -1)
+    {
+        printf("[-] Cannot put word.\n");
+        return -1;
+    }
     if (orientation == VERTICAL)
     {
         for (unsigned int y_c = y; y_c < y + word.size(); y_c++)
@@ -138,11 +157,7 @@ int Board::addWord(int x, int y, std::vector < std::string > word, bool orientat
     }
     m_totalWords++;
 
-    /* Adding all letters bonud */
-    if(response.second.first == CORRECTWORD50BONUS) {score+=50; printf("[+] All letters used = 50 points bonus!\n");}
-    printf("[+] Successfull added word with score %d!\n",score);
-
-    return score;
+    return response.first;
 }
 
 int Board::countScore(int x, int y, std::vector < std::string > word, bool orientation, std::vector <int> blanks)

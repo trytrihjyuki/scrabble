@@ -42,6 +42,8 @@ public:
 
     bool checkTilePress(int x, int y, sf::Vector2i mousePosition);
 
+    std::pair <int, std::vector <int> > checkWord(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters);
+
     int addWord(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters);
 
     int countScore(int x, int y, std::vector < std::string > word, bool orientation, std::vector <int> blanks);
