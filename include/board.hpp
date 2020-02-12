@@ -16,6 +16,9 @@
 #include"textbox.hpp"
 #include"button.hpp"
 
+/* Do not output debug when bruting */
+#define NOBRUT if(!m_makingBestMove)
+
 /* Orientation */
 #define VERTICAL 1
 #define HORIZONTAL 0
@@ -38,6 +41,14 @@ struct Move
     bool orientation;
     std::vector <std::string> word;
     int score;
+};
+
+struct WordOnBoard
+{
+    int x;
+    int y;
+    bool orientation;
+    std::string word;
 };
 
 class Board
@@ -65,7 +76,7 @@ public:
 private:
     std::pair < bool, std::pair < int, std::vector <int> > > checkCorrectness(Move move, std::vector < std::string > playersLetters);
 
-    void getNewWord(int x, int y, bool orientation, std::vector < std::string >* newWords);
+    void getNewWord(int x, int y, bool orientation, std::vector < WordOnBoard >* newWords);
 
     sf::Texture m_boardTexture;
     sf::Sprite m_boardSprite;
@@ -76,9 +87,16 @@ private:
     int m_wordBonus[15][15];
 
     std::unordered_map <std::string, int> m_dictionary;
+    std::vector <std::string> m_alphabet;
 
     std::map <std::string,int> m_lettersPoints;
 
     int m_totalWords;
+    std::vector <WordOnBoard> m_allWords;
 
+
+    bool m_makingBestMove;
+    bool m_addingWord;
 };
+
+std::vector <std::string> convertString(std::string word);

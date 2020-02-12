@@ -146,7 +146,6 @@ void Game::draw()
     m_window->draw(*m_verticalButton->getTextPointer());
 
     m_window->draw(*m_changeButton->getSpritePointer());
-    // for (int i = 0; i < 7; i++) if (m_selectedLetters[i]) m_window->draw(*m_activePlayerTiles[i]->getBackgroundPointer());
 
     m_window->draw(*m_enterWordHeader->getTextPointer());
     m_window->draw(*m_enterWordButton->getSpritePointer());
@@ -211,9 +210,7 @@ void Game::makeBestMove(Player* player)
         changeSelectedLetters(player);
     }
     else
-    {
-
-    }
+        makeMove(player,bestMove);
 }
 
 void Game::nextTurn()
@@ -233,11 +230,7 @@ void Game::nextTurn()
     m_enterWord = "";
     m_enterWordLength = 0;
     /* Computers turn */
-    if (!activePlayer->getHuman())
-    {
-        makeBestMove(activePlayer);
-        nextTurn();
-    }
+    if (!activePlayer->getHuman()) makeBestMove(activePlayer);
 }
 
 void Game::processEvents()
@@ -340,16 +333,7 @@ void Game::processEvents()
             /* Only enter word if specific cliced */
             if (clickedTiles.size() == 1)
             {
-                std::vector < std::string > addedWord; addedWord.resize(0);
-                for(unsigned int i = 0; i < m_enterWord.size(); i++)
-                {
-                    std::string temp = "";
-                    if (m_enterWord[i] > 'Z' || m_enterWord[i] < 'A') {temp+=m_enterWord[i]; temp+=m_enterWord[++i];}
-                    else  temp+=m_enterWord[i];
-                    addedWord.push_back(temp);
-                }
-
-                Move move {clickedTiles[0].first, clickedTiles[0].second, m_enterOrientation, addedWord};
+                Move move {clickedTiles[0].first, clickedTiles[0].second, m_enterOrientation, convertString(m_enterWord),0};
                 makeMove(m_players[m_turn], move);
             }
         }
@@ -372,6 +356,8 @@ void Game::processEvents()
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
         {
+                if (m_selectingLetters) printf("[-] Stop selecting letters to change.\n");
+                if (m_enterWordButton->isPressed()) printf("[-] Stop typing word.\n");
                 m_selectingLetters = false; /* Stop selecting letter to change when ESC */
                 m_enterWordButton->setPressed(false);
         }

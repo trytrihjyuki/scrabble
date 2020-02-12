@@ -1,5 +1,19 @@
 #include"board.hpp"
 
+std::vector <std::string> convertString(std::string s)
+{
+    std::vector < std::string > v; v.resize(0);
+    for(unsigned int i = 0; i < s.size(); i++)
+    {
+        std::string temp = "";
+        if (s[i] > 'Z' || s[i] < 'A') {temp+=s[i]; temp+=s[++i];}
+        else  temp+=s[i];
+        v.push_back(temp);
+    }
+
+    return v;
+}
+
 Board::Board(sf::RenderWindow* window)
 {
     /* Board texture */
@@ -26,6 +40,7 @@ Board::Board(sf::RenderWindow* window)
     }
 
     m_totalWords = 0;
+    m_allWords.resize(0);
 
     /* Setting words and letters bonus */
     m_wordBonus[7][7] = 2;
@@ -45,9 +60,14 @@ Board::Board(sf::RenderWindow* window)
     /* Reading dictionary from file */
     std::fstream dictionaryFile; std::string word;
     dictionaryFile.open("static/polish_words.txt");
-    printf("[+] Reading dictionary from file. Please wait...\n"); 
+    NOBRUT printf("[+] Reading dictionary from file. Please wait...\n"); 
     while (dictionaryFile >> word) m_dictionary[word] = 1;
     dictionaryFile.close();
+
+    m_alphabet =  {"A","Ą","B","C","Ć","D","E","Ę","F","G","H","I","J","K","L","Ł","M","N","Ń","O","Ó","P","R","S","Ś","T","U","W","Y","Z","Ź","Ż"};
+
+    m_makingBestMove = 0;
+    m_addingWord = 0;
 }
 
 Board::~Board()
@@ -72,9 +92,9 @@ bool Board::checkTilePress(int x, int y, sf::Vector2i mousePosition)
 
 std::pair <int, std::vector <int> > Board::checkWord(Move move, std::vector < std::string > playersLetters)
 {
-    printf("\nChecking word \"");
-    for (auto letter: move.word) std::cout<<letter;
-    printf("\" on (%d,%d) cords orientated %d\n",move.x,move.y,move.orientation);
+    NOBRUT printf("\nChecking word \"");
+    for (auto letter: move.word) NOBRUT printf("%s",letter.c_str());
+    NOBRUT printf("\" on (%d,%d) cords orientated %d\n",move.x,move.y,move.orientation);
 
     std::pair < bool, std::pair <int , std::vector <int> > > response = checkCorrectness(move,playersLetters);
     std::vector <int> blanks = response.second.second;
@@ -82,25 +102,25 @@ std::pair <int, std::vector <int> > Board::checkWord(Move move, std::vector < st
     {
         switch (response.second.first){
             case OUTREACHBOARD:
-                printf("[-] Cannot put the word, it outreach the board.\n");
+                NOBRUT printf("[-] Cannot put the word, it outreach the board.\n");
                 break;
             case OVERWRITEWORD:
-                printf("[-] Cannot put the word, it overwrites some word on board.\n");
+                NOBRUT printf("[-] Cannot put the word, it overwrites some word on board.\n");
                 break;
             case UNCORRECTWORD:
-                printf("[-] Cannot put the word, it's not correct.\n");
+                NOBRUT printf("[-] Cannot put the word, it's not correct.\n");
                 break;
             case NONEIGHBOUR:
-                printf("[-] Cannot put the word, no words in neighbourhood.\n");
+                NOBRUT printf("[-] Cannot put the word, no words in neighbourhood.\n");
                 break;
             case MISSINGLETTERS:
-                printf("[-] Missing some letters.\n");
+                NOBRUT printf("[-] Missing some letters.\n");
                 break;
             case SAMEWORD:
-                printf("[-] It is not a new word.\n");
+                NOBRUT printf("[-] It is not a new word.\n");
                 break;
             case NOMIDDLEFIRSTWORD:
-                printf("[-] First word must be on middle.\n");
+                NOBRUT printf("[-] First word must be on middle.\n");
                 break;
         }
 
@@ -110,17 +130,19 @@ std::pair <int, std::vector <int> > Board::checkWord(Move move, std::vector < st
     /* Creating word on board, counting score */
     int score = countScore(move,blanks);
     /* Adding all letters bonud */
-    if(response.second.first == CORRECTWORD50BONUS) {score+=50; printf("[+] All letters used = 50 points bonus!\n");}
-    printf("[+] Successfull added word with score %d!\n",score);
+    if(response.second.first == CORRECTWORD50BONUS) {score+=50; NOBRUT printf("[+] All letters used = 50 points bonus!\n");}
+    NOBRUT printf("[+] Successfull added word with score %d!\n",score);
 
     return {score,blanks};
 
 }
 int Board::addWord(Move move, std::vector < std::string > playersLetters)
 {
-    printf("\nTrying to put word \"");
-    for (auto letter: move.word) std::cout<<letter;
-    printf("\" on (%d,%d) cords orientated %d\n",move.x,move.y,move.orientation);
+    m_addingWord = 1;
+
+    NOBRUT printf("\nTrying to put word \"");
+    for (auto letter: move.word) NOBRUT printf("%s",letter.c_str());
+    NOBRUT printf("\" on (%d,%d) cords orientated %d\n",move.x,move.y,move.orientation);
 
     /* Creating word on board, counting score */
     std::pair <int, std::vector <int> > response = checkWord(move,playersLetters);
@@ -128,7 +150,7 @@ int Board::addWord(Move move, std::vector < std::string > playersLetters)
     /* Unsuccessfull attend to add word */
     if (response.first == -1)
     {
-        printf("[-] Cannot put word.\n");
+        NOBRUT printf("[-] Cannot put word.\n");
         return -1;
     }
     if (move.orientation == VERTICAL)
@@ -157,6 +179,7 @@ int Board::addWord(Move move, std::vector < std::string > playersLetters)
     }
     m_totalWords++;
 
+    m_addingWord = 0;
     return response.first;
 }
 
@@ -298,7 +321,7 @@ std::pair < bool, std::pair < int, std::vector <int> > > Board::checkCorrectness
     if ((int)playersLetters.size() == numPlayerLetters) return {false, {SAMEWORD, usedBlanks}};
 
     /* Checking correctness of all new words */
-    std::vector < std::string > newWords;
+    std::vector <WordOnBoard> newWords;
     newWords.resize(0);
 
     /* Checking NEW word in row/column */
@@ -350,8 +373,8 @@ std::pair < bool, std::pair < int, std::vector <int> > > Board::checkCorrectness
     }
 
     bool isCorrect = true;
-    for (auto newWord:newWords) 
-        if (m_dictionary[newWord] != 1)
+    for (auto newWord: newWords) 
+        if (m_dictionary[newWord.word] != 1)
         {
             /* Take back the word from board if it's not correct */
             if (move.orientation == VERTICAL) for (unsigned int y_c = move.y; y_c < move.y + move.word.size(); y_c++) m_letters[move.x][y_c] = "";
@@ -361,12 +384,15 @@ std::pair < bool, std::pair < int, std::vector <int> > > Board::checkCorrectness
 
     if (!isCorrect) return {false, {UNCORRECTWORD, usedBlanks}};
 
+    if (m_addingWord) /* Getting all new words */
+        for (auto newWord: newWords) m_allWords.push_back(newWord);
+
     if (!playersLetters.size()) return {true, {CORRECTWORD50BONUS, usedBlanks}};
     return {true, {CORRECTWORD, usedBlanks}};
 
 }
 
-void Board::getNewWord(int x, int y, bool orientation, std::vector < std::string >* newWords)
+void Board::getNewWord(int x, int y, bool orientation, std::vector <WordOnBoard>* newWords)
 {
     std::vector < std::string > prefix; std::vector < std::string > sufix;
     prefix.resize(0); sufix.resize(0);
@@ -382,12 +408,17 @@ void Board::getNewWord(int x, int y, bool orientation, std::vector < std::string
         for (int x_c = x; x_c <= 14 && m_letters[x_c][y] != ""; x_c++) sufix.push_back(m_letters[x_c][y]);
     }
     std::reverse(prefix.begin(), prefix.end());
-    std::string newWord = "";
-    for (auto letter:prefix) newWord+=letter;
-    for (auto letter:sufix) newWord+=letter;
+    WordOnBoard newWord;
+    newWord.word = "";
+    for (auto letter:prefix) newWord.word+=letter;
+    for (auto letter:sufix) newWord.word+=letter;
 
     /* Skip simple newWords */
-    if (prefix.size() + sufix.size() > 1) newWords->push_back(newWord);
+    if (prefix.size() + sufix.size() > 1)
+    {
+        newWord.x = x; newWord.y = y; newWord.orientation = orientation;
+        newWords->push_back(newWord);
+    }
 }
 
 std::vector <std::string> Board::unusedLetters(Move move, std::vector < std::string > playersLetters)
@@ -466,6 +497,25 @@ std::vector <std::string> Board::unusedLetters(Move move, std::vector < std::str
 
 Move Board::getBestMove(std::vector < std::string > playersLetters)
 {
+    std::cout<<"All words on board:\n";
+    for (auto word: m_allWords)
+    {
+        for(auto letter: word.word) std::cout<<letter;
+        std::cout<<"\n";
+    }
+    std::cout<<"\n";
+    Move bestMove {0,0,VERTICAL,{},0};
+    Move candidate {0,0,VERTICAL,{},0};
+
+    m_makingBestMove = 1;
+
+    int counter = 0;
+
+    /* Brute force ;) */
+
+
+    m_makingBestMove = 0;
+    return bestMove;
 
 }
 
