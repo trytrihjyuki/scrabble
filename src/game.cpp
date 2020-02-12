@@ -172,6 +172,12 @@ void Game::nextTurn()
     m_enterWordButton->updateText("WORD");
     m_enterWord = "";
     m_enterWordLength = 0;
+    /* Computers turn */
+    if (!activePlayer->getHuman())
+    {
+        // activePlayer->makeBestMove();
+        nextTurn();
+    }
 }
 
 void Game::processEvents()
@@ -307,8 +313,9 @@ void Game::processEvents()
                     addedWord.push_back(temp);
                 }
 
-                std::vector <std::string> lettersLeft = m_board->unusedLetters(clickedTiles[0].first,clickedTiles[0].second,addedWord,m_enterOrientation,m_players[m_turn]->getLetters());
-                int madeScore = m_board->addWord(clickedTiles[0].first,clickedTiles[0].second,addedWord,m_enterOrientation,m_players[m_turn]->getLetters());
+                Move move {clickedTiles[0].first, clickedTiles[0].second, m_enterOrientation, addedWord};
+                std::vector <std::string> lettersLeft = m_board->unusedLetters(move,m_players[m_turn]->getLetters());
+                int madeScore = m_board->addWord(move,m_players[m_turn]->getLetters());
 
                 if (madeScore != -1) /* Succesfull added Word with non zero score */
                 {

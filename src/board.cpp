@@ -70,13 +70,13 @@ bool Board::checkTilePress(int x, int y, sf::Vector2i mousePosition)
     return m_lettersTiles[x][y]->check(mousePosition);
 }
 
-std::pair <int, std::vector <int> > Board::checkWord(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters)
+std::pair <int, std::vector <int> > Board::checkWord(Move move, std::vector < std::string > playersLetters)
 {
     printf("\nChecking word \"");
-    for (auto letter: word) std::cout<<letter;
-    printf("\" on (%d,%d) cords orientated %d\n",x,y,orientation);
+    for (auto letter: move.word) std::cout<<letter;
+    printf("\" on (%d,%d) cords orientated %d\n",move.x,move.y,move.orientation);
 
-    std::pair < bool, std::pair <int , std::vector <int> > > response = checkCorrectness(x,y,word,orientation,playersLetters);
+    std::pair < bool, std::pair <int , std::vector <int> > > response = checkCorrectness(move,playersLetters);
     std::vector <int> blanks = response.second.second;
     if (!response.first)
     {
@@ -108,7 +108,7 @@ std::pair <int, std::vector <int> > Board::checkWord(int x, int y, std::vector <
     }
 
     /* Creating word on board, counting score */
-    int score = countScore(x,y,word,orientation,blanks);
+    int score = countScore(move,blanks);
     /* Adding all letters bonud */
     if(response.second.first == CORRECTWORD50BONUS) {score+=50; printf("[+] All letters used = 50 points bonus!\n");}
     printf("[+] Successfull added word with score %d!\n",score);
@@ -116,14 +116,14 @@ std::pair <int, std::vector <int> > Board::checkWord(int x, int y, std::vector <
     return {score,blanks};
 
 }
-int Board::addWord(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters)
+int Board::addWord(Move move, std::vector < std::string > playersLetters)
 {
     printf("\nTrying to put word \"");
-    for (auto letter: word) std::cout<<letter;
-    printf("\" on (%d,%d) cords orientated %d\n",x,y,orientation);
+    for (auto letter: move.word) std::cout<<letter;
+    printf("\" on (%d,%d) cords orientated %d\n",move.x,move.y,move.orientation);
 
     /* Creating word on board, counting score */
-    std::pair <int, std::vector <int> > response = checkWord(x,y,word,orientation,playersLetters);
+    std::pair <int, std::vector <int> > response = checkWord(move,playersLetters);
     std::vector <int> blanks = response.second;
     /* Unsuccessfull attend to add word */
     if (response.first == -1)
@@ -131,79 +131,79 @@ int Board::addWord(int x, int y, std::vector < std::string > word, bool orientat
         printf("[-] Cannot put word.\n");
         return -1;
     }
-    if (orientation == VERTICAL)
+    if (move.orientation == VERTICAL)
     {
-        for (unsigned int y_c = y; y_c < y + word.size(); y_c++)
-            if (m_letterBonus[x][y_c]) m_lettersTiles[x][y_c]->setImage(std::string("static/letters/pl/") + word[y_c-y] + ".png");
-        for (auto blank: blanks) m_lettersTiles[x][y+blank]->setImage(std::string("static/letters/pl/") + "_" + ".png");
+        for (unsigned int y_c = move.y; y_c < move.y + move.word.size(); y_c++)
+            if (m_letterBonus[move.x][y_c]) m_lettersTiles[move.x][y_c]->setImage(std::string("static/letters/pl/") + move.word[y_c-move.y] + ".png");
+        for (auto blank: blanks) m_lettersTiles[move.x][move.y+blank]->setImage(std::string("static/letters/pl/") + "_" + ".png");
     }
-    if (orientation == HORIZONTAL)
+    if (move.orientation == HORIZONTAL)
     {
-        for (unsigned int x_c = x; x_c < x + word.size(); x_c++)
-            if (m_letterBonus[x_c][y]) m_lettersTiles[x_c][y]->setImage(std::string("static/letters/pl/") + word[x_c-x] + ".png");
-        for (auto blank: blanks) m_lettersTiles[x+blank][y]->setImage(std::string("static/letters/pl/") + "_" + ".png");
+        for (unsigned int x_c = move.x; x_c < move.x + move.word.size(); x_c++)
+            if (m_letterBonus[x_c][move.y]) m_lettersTiles[x_c][move.y]->setImage(std::string("static/letters/pl/") + move.word[x_c-move.x] + ".png");
+        for (auto blank: blanks) m_lettersTiles[move.x+blank][move.y]->setImage(std::string("static/letters/pl/") + "_" + ".png");
     }
 
     /* Clear used bonus */
-    if (orientation == VERTICAL)
+    if (move.orientation == VERTICAL)
     {
-        for (unsigned int y_c = y; y_c < y + word.size(); y_c++){if (m_letterBonus[x][y_c]) m_letterBonus[x][y_c] = 1; m_wordBonus[x][y_c] = 1;}
-        for (auto blank: blanks) m_letterBonus[x][y+blank] = 0;
+        for (unsigned int y_c = move.y; y_c < move.y + move.word.size(); y_c++){if (m_letterBonus[move.x][y_c]) m_letterBonus[move.x][y_c] = 1; m_wordBonus[move.x][y_c] = 1;}
+        for (auto blank: blanks) m_letterBonus[move.x][move.y+blank] = 0;
     }
-    if (orientation == HORIZONTAL)
+    if (move.orientation == HORIZONTAL)
     {
-        for (unsigned int x_c = x; x_c < x + word.size(); x_c++){if (m_letterBonus[x_c][y]) m_letterBonus[x_c][y] = 1; m_wordBonus[x_c][y] = 1;}
-        for (auto blank: blanks) m_letterBonus[x+blank][y] = 0;
+        for (unsigned int x_c = move.x; x_c < move.x + move.word.size(); x_c++){if (m_letterBonus[x_c][move.y]) m_letterBonus[x_c][move.y] = 1; m_wordBonus[x_c][move.y] = 1;}
+        for (auto blank: blanks) m_letterBonus[move.x+blank][move.y] = 0;
     }
     m_totalWords++;
 
     return response.first;
 }
 
-int Board::countScore(int x, int y, std::vector < std::string > word, bool orientation, std::vector <int> blanks)
+int Board::countScore(Move move, std::vector <int> blanks)
 {
     int score = 0;
 
-    if (orientation == HORIZONTAL)
+    if (move.orientation == HORIZONTAL)
     {
         /* Blanks gives 0 points */
-        for(auto blank: blanks) m_letterBonus[x+blank][y] = 0;
+        for(auto blank: blanks) m_letterBonus[move.x+blank][move.y] = 0;
 
         int currScore = 0; int currWordBonus = 1;
-        for (int x_c = x-1; x_c >= 0 && m_letters[x_c][y] != ""; x_c--) {currScore += m_letterBonus[x_c][y] * m_lettersPoints[m_letters[x_c][y]]; currWordBonus *= m_wordBonus[x_c][y];}
-        for (int x_c = x; x_c <= 14 && m_letters[x_c][y] != ""; x_c++) {currScore += m_letterBonus[x_c][y] * m_lettersPoints[m_letters[x_c][y]]; currWordBonus *= m_wordBonus[x_c][y];}
+        for (int x_c = move.x-1; x_c >= 0 && m_letters[x_c][move.y] != ""; x_c--) {currScore += m_letterBonus[x_c][move.y] * m_lettersPoints[m_letters[x_c][move.y]]; currWordBonus *= m_wordBonus[x_c][move.y];}
+        for (int x_c = move.x; x_c <= 14 && m_letters[x_c][move.y] != ""; x_c++) {currScore += m_letterBonus[x_c][move.y] * m_lettersPoints[m_letters[x_c][move.y]]; currWordBonus *= m_wordBonus[x_c][move.y];}
         score += currScore * currWordBonus;
 
         currScore = 0; currWordBonus = 1;
-        for (unsigned int x_c = x; x_c < x + word.size(); x_c++)
+        for (unsigned int x_c = move.x; x_c < move.x + move.word.size(); x_c++)
         {
-            if(m_letters[x_c][y] == "") /* Add only new words */
+            if(m_letters[x_c][move.y] == "") /* Add only new words */
             {
-                for (int y_c = y-1; y_c >= 0 && m_letters[x_c][y_c] != ""; y_c--) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
-                for (int y_c = y; y_c <= 14 && m_letters[x_c][y_c] != ""; y_c++) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
-                /* Delete extra points for same word */ if (y + 1 > 14 || m_letters[x_c][y+1] == "") {currScore -= m_letterBonus[x_c][y] * m_lettersPoints[m_letters[x_c][y]]; currWordBonus /= m_wordBonus[x_c][y];}
+                for (int y_c = move.y-1; y_c >= 0 && m_letters[x_c][y_c] != ""; y_c--) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
+                for (int y_c = move.y; y_c <= 14 && m_letters[x_c][y_c] != ""; y_c++) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
+                /* Delete extra points for same word */ if (move.y + 1 > 14 || m_letters[x_c][move.y+1] == "") {currScore -= m_letterBonus[x_c][move.y] * m_lettersPoints[m_letters[x_c][move.y]]; currWordBonus /= m_wordBonus[x_c][move.y];}
             }
         }
         score += currScore * currWordBonus;
     }
-    if (orientation == VERTICAL)
+    if (move.orientation == VERTICAL)
     {
         /* Blanks gives 0 points */
-        for(auto blank: blanks) m_letterBonus[x][y+blank] = 0;
+        for(auto blank: blanks) m_letterBonus[move.x][move.y+blank] = 0;
 
         int currScore = 0; int currWordBonus = 1;
-        for (int y_c = y-1; y_c >= 0 && m_letters[x][y_c] != ""; y_c--) {currScore += m_letterBonus[x][y_c] * m_lettersPoints[m_letters[x][y_c]]; currWordBonus *= m_wordBonus[x][y_c];}
-        for (int y_c = y; y_c <= 14 && m_letters[x][y_c] != ""; y_c++) {currScore += m_letterBonus[x][y_c] * m_lettersPoints[m_letters[x][y_c]]; currWordBonus *= m_wordBonus[x][y_c];}
+        for (int y_c = move.y-1; y_c >= 0 && m_letters[move.x][y_c] != ""; y_c--) {currScore += m_letterBonus[move.x][y_c] * m_lettersPoints[m_letters[move.x][y_c]]; currWordBonus *= m_wordBonus[move.x][y_c];}
+        for (int y_c = move.y; y_c <= 14 && m_letters[move.x][y_c] != ""; y_c++) {currScore += m_letterBonus[move.x][y_c] * m_lettersPoints[m_letters[move.x][y_c]]; currWordBonus *= m_wordBonus[move.x][y_c];}
         score += currScore * currWordBonus;
 
         currScore = 0; currWordBonus = 1;
-        for (unsigned int y_c = y; y_c < y + word.size(); y_c++)
+        for (unsigned int y_c = move.y; y_c < move.y + move.word.size(); y_c++)
         {
-            if(m_letters[x][y_c] == "") /* Add only new words */
+            if(m_letters[move.x][y_c] == "") /* Add only new words */
             {
-                for (int x_c = x-1; x_c >= 0 && m_letters[x_c][y_c] != ""; x_c--) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
-                for (int x_c = x; x_c <= 14 && m_letters[x_c][y_c] != ""; x_c++) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
-                /* Delete extra points for same word */ if (x + 1 > 14 || m_letters[x+1][y_c] == "") {currScore -= m_letterBonus[x][y_c] * m_lettersPoints[m_letters[x][y_c]]; currWordBonus /= m_wordBonus[x][y_c];}
+                for (int x_c = move.x-1; x_c >= 0 && m_letters[x_c][y_c] != ""; x_c--) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
+                for (int x_c = move.x; x_c <= 14 && m_letters[x_c][y_c] != ""; x_c++) {currScore += m_letterBonus[x_c][y_c] * m_lettersPoints[m_letters[x_c][y_c]]; currWordBonus *= m_wordBonus[x_c][y_c];}
+                /* Delete extra points for same word */ if (move.x + 1 > 14 || m_letters[move.x+1][y_c] == "") {currScore -= m_letterBonus[move.x][y_c] * m_lettersPoints[m_letters[move.x][y_c]]; currWordBonus /= m_wordBonus[move.x][y_c];}
             }
         }
         score += currScore * currWordBonus;
@@ -212,33 +212,33 @@ int Board::countScore(int x, int y, std::vector < std::string > word, bool orien
     return score;
 }
 
-std::pair < bool, std::pair < int, std::vector <int> > > Board::checkCorrectness(int x, int y, std::vector < std::string > word , bool orientation, std::vector < std::string > playersLetters)
+std::pair < bool, std::pair < int, std::vector <int> > > Board::checkCorrectness(Move move, std::vector < std::string > playersLetters)
 {
     bool isNeighbour = false;
     std::vector <int> usedBlanks; usedBlanks.resize(0);
     /* Checking if the word fits in the board */
-    if (x < 0 || x >= 15) return {false, {OUTREACHBOARD, usedBlanks}};
-    if (y < 0 || y >= 15) return {false, {OUTREACHBOARD, usedBlanks}};
+    if (move.x < 0 || move.x >= 15) return {false, {OUTREACHBOARD, usedBlanks}};
+    if (move.y < 0 || move.y >= 15) return {false, {OUTREACHBOARD, usedBlanks}};
 
-    if (orientation == VERTICAL)
-        if (y + (int)word.size() > 15) return {false, {OUTREACHBOARD, usedBlanks}};
-    if (orientation == HORIZONTAL)
-        if (x + (int)word.size() > 15) return {false, {OUTREACHBOARD, usedBlanks}};
+    if (move.orientation == VERTICAL)
+        if (move.y + (int)move.word.size() > 15) return {false, {OUTREACHBOARD, usedBlanks}};
+    if (move.orientation == HORIZONTAL)
+        if (move.x + (int)move.word.size() > 15) return {false, {OUTREACHBOARD, usedBlanks}};
 
-    if (orientation == VERTICAL) for (unsigned int y_c = y; y_c - y < word.size(); y_c++) if (m_letters[x][y_c] != "" && m_letters[x][y_c] != word[y_c-y]) return {false, {OVERWRITEWORD, usedBlanks}};
-    if (orientation == HORIZONTAL) for (unsigned int x_c = x; x_c - x < word.size(); x_c++) if (m_letters[x_c][y] != "" && m_letters[x_c][y] != word[x_c-x]) return {false, {OVERWRITEWORD, usedBlanks}};
+    if (move.orientation == VERTICAL) for (unsigned int y_c = move.y; y_c - move.y < move.word.size(); y_c++) if (m_letters[move.x][y_c] != "" && m_letters[move.x][y_c] != move.word[y_c-move.y]) return {false, {OVERWRITEWORD, usedBlanks}};
+    if (move.orientation == HORIZONTAL) for (unsigned int x_c = move.x; x_c - move.x < move.word.size(); x_c++) if (m_letters[x_c][move.y] != "" && m_letters[x_c][move.y] != move.word[x_c-move.x]) return {false, {OVERWRITEWORD, usedBlanks}};
 
     int numPlayerLetters = playersLetters.size();
     /* Check if player have enough letters */
-    if (orientation == VERTICAL)
-        for (unsigned int y_c = y; y_c - y < word.size(); y_c++)
+    if (move.orientation == VERTICAL)
+        for (unsigned int y_c = move.y; y_c - move.y < move.word.size(); y_c++)
         {
-            if(m_letters[x][y_c] == "")
+            if(m_letters[move.x][y_c] == "")
             {
                 bool find = 0;
                 for (unsigned int i = 0; i < playersLetters.size(); i++)
                 {
-                    if(word[y_c-y] == playersLetters[i])
+                    if(move.word[y_c-move.y] == playersLetters[i])
                     {
                         find = 1;
                         playersLetters.erase(playersLetters.begin() + i);
@@ -253,7 +253,7 @@ std::pair < bool, std::pair < int, std::vector <int> > > Board::checkCorrectness
                         {
                             find = 1;
                             playersLetters.erase(playersLetters.begin() + i);
-                            usedBlanks.push_back(y_c-y);
+                            usedBlanks.push_back(y_c-move.y);
                             break;
                         }
                     }
@@ -262,15 +262,15 @@ std::pair < bool, std::pair < int, std::vector <int> > > Board::checkCorrectness
             }
             else isNeighbour = true;
         }
-    if (orientation == HORIZONTAL)
-        for (unsigned int x_c = x; x_c - x < word.size(); x_c++)
+    if (move.orientation == HORIZONTAL)
+        for (unsigned int x_c = move.x; x_c - move.x < move.word.size(); x_c++)
         {
-            if(m_letters[x_c][y] == "")
+            if(m_letters[x_c][move.y] == "")
             {
                 bool find = 0;
                 for (unsigned int i = 0; i < playersLetters.size(); i++)
                 {
-                    if(word[x_c-x] == playersLetters[i] || playersLetters[i] == "_")
+                    if(move.word[x_c-move.x] == playersLetters[i] || playersLetters[i] == "_")
                     {
                         find = 1;
                         playersLetters.erase(playersLetters.begin() + i);
@@ -285,7 +285,7 @@ std::pair < bool, std::pair < int, std::vector <int> > > Board::checkCorrectness
                         {
                             find = 1;
                             playersLetters.erase(playersLetters.begin() + i);
-                            usedBlanks.push_back(x_c-x);
+                            usedBlanks.push_back(x_c-move.x);
                             break;
                         }
                     }
@@ -306,47 +306,47 @@ std::pair < bool, std::pair < int, std::vector <int> > > Board::checkCorrectness
     prefix.resize(0); sufix.resize(0);
 
     /* Check if word has a neighbour */
-    if (orientation == VERTICAL)
+    if (move.orientation == VERTICAL)
     {
-        if (y>0 && m_letters[x][y-1] != "") isNeighbour = true;
-        if (y+word.size() < 15 && m_letters[x][y+word.size()] != "") isNeighbour = true;
-        for (unsigned int y_c = y; y_c - y < word.size(); y_c++) if (x - 1 >= 0 && m_letters[x-1][y_c] != "") isNeighbour = true;
-        for (unsigned int y_c = y; y_c - y < word.size(); y_c++) if (x + 1 < 15 && m_letters[x+1][y_c] != "") isNeighbour = true;
+        if (move.y>0 && m_letters[move.x][move.y-1] != "") isNeighbour = true;
+        if (move.y+move.word.size() < 15 && m_letters[move.x][move.y+move.word.size()] != "") isNeighbour = true;
+        for (unsigned int y_c = move.y; y_c - move.y < move.word.size(); y_c++) if (move.x - 1 >= 0 && m_letters[move.x-1][y_c] != "") isNeighbour = true;
+        for (unsigned int y_c = move.y; y_c - move.y < move.word.size(); y_c++) if (move.x + 1 < 15 && m_letters[move.x+1][y_c] != "") isNeighbour = true;
     }
-    if (orientation == HORIZONTAL)
+    if (move.orientation == HORIZONTAL)
     {
-        if (x>0 && m_letters[x-1][y] != "") isNeighbour = true;
-        if (x+word.size() < 15 && m_letters[x+word.size()][y] != "") isNeighbour = true;
-        for (unsigned int x_c = x; x_c - x < word.size(); x_c++) if (y - 1 >= 0 && m_letters[x_c][y-1] != "") isNeighbour = true;
-        for (unsigned int x_c = x; x_c - x < word.size(); x_c++) if (y + 1 < 15 && m_letters[x_c][y+1] != "") isNeighbour = true;
+        if (move.x>0 && m_letters[move.x-1][move.y] != "") isNeighbour = true;
+        if (move.x+move.word.size() < 15 && m_letters[move.x+move.word.size()][move.y] != "") isNeighbour = true;
+        for (unsigned int x_c = move.x; x_c - move.x < move.word.size(); x_c++) if (move.y - 1 >= 0 && m_letters[x_c][move.y-1] != "") isNeighbour = true;
+        for (unsigned int x_c = move.x; x_c - move.x < move.word.size(); x_c++) if (move.y + 1 < 15 && m_letters[x_c][move.y+1] != "") isNeighbour = true;
     }
     if (!isNeighbour && m_totalWords != 0) return {false, {NONEIGHBOUR, usedBlanks}};
 
     if (m_totalWords == 0)
     {
         bool isMiddle = false;
-        if (orientation == VERTICAL) for (unsigned int y_c = y; y_c < y + word.size(); y_c++) if ( x == 7 && y_c == 7) isMiddle = true;
-        if (orientation == HORIZONTAL) for (unsigned int x_c = x; x_c < x + word.size(); x_c++) if ( x_c == 7 && y == 7) isMiddle = true;
+        if (move.orientation == VERTICAL) for (unsigned int y_c = move.y; y_c < move.y + move.word.size(); y_c++) if ( move.x == 7 && y_c == 7) isMiddle = true;
+        if (move.orientation == HORIZONTAL) for (unsigned int x_c = move.x; x_c < move.x + move.word.size(); x_c++) if ( x_c == 7 && move.y == 7) isMiddle = true;
         if (!isMiddle) return {false, {NOMIDDLEFIRSTWORD, usedBlanks}};
     }
     /* Word fits the board, put it and check if NEW words are correct, if no take it back */
-    if (orientation == VERTICAL) for (unsigned int y_c = y; y_c < y + word.size(); y_c++) m_letters[x][y_c] = word[y_c-y];
-    if (orientation == HORIZONTAL) for (unsigned int x_c = x; x_c < x + word.size(); x_c++) m_letters[x_c][y] = word[x_c-x];
+    if (move.orientation == VERTICAL) for (unsigned int y_c = move.y; y_c < move.y + move.word.size(); y_c++) m_letters[move.x][y_c] = move.word[y_c-move.y];
+    if (move.orientation == HORIZONTAL) for (unsigned int x_c = move.x; x_c < move.x + move.word.size(); x_c++) m_letters[x_c][move.y] = move.word[x_c-move.x];
 
 
-    getNewWord(x,y,orientation,&newWords);
+    getNewWord(move.x,move.y,move.orientation,&newWords);
 
-    if (orientation == VERTICAL)
+    if (move.orientation == VERTICAL)
     {
         /* Checking NEW words in rows */
-        for (unsigned int y_c = y; y_c < y + word.size(); y_c++)
-            getNewWord(x,y_c,HORIZONTAL,&newWords);
+        for (unsigned int y_c = move.y; y_c < move.y + move.word.size(); y_c++)
+            getNewWord(move.x,y_c,HORIZONTAL,&newWords);
     }
-    if (orientation == HORIZONTAL)
+    if (move.orientation == HORIZONTAL)
     {
         /* Checking NEW words in columns */
-        for (unsigned int x_c = x; x_c < x + word.size(); x_c++)
-            getNewWord(x_c,y,VERTICAL,&newWords);
+        for (unsigned int x_c = move.x; x_c < move.x + move.word.size(); x_c++)
+            getNewWord(x_c,move.y,VERTICAL,&newWords);
     }
 
     bool isCorrect = true;
@@ -354,8 +354,8 @@ std::pair < bool, std::pair < int, std::vector <int> > > Board::checkCorrectness
         if (m_dictionary[newWord] != 1)
         {
             /* Take back the word from board if it's not correct */
-            if (orientation == VERTICAL) for (unsigned int y_c = y; y_c < y + word.size(); y_c++) m_letters[x][y_c] = "";
-            if (orientation == HORIZONTAL) for (unsigned int x_c = x; x_c < x + word.size(); x_c++) m_letters[x_c][y] = "";
+            if (move.orientation == VERTICAL) for (unsigned int y_c = move.y; y_c < move.y + move.word.size(); y_c++) m_letters[move.x][y_c] = "";
+            if (move.orientation == HORIZONTAL) for (unsigned int x_c = move.x; x_c < move.x + move.word.size(); x_c++) m_letters[x_c][move.y] = "";
             isCorrect = false;
         }
 
@@ -390,18 +390,18 @@ void Board::getNewWord(int x, int y, bool orientation, std::vector < std::string
     if (prefix.size() + sufix.size() > 1) newWords->push_back(newWord);
 }
 
-std::vector <std::string> Board::unusedLetters(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters)
+std::vector <std::string> Board::unusedLetters(Move move, std::vector < std::string > playersLetters)
 {
     std::vector <std::string> neededLetters; neededLetters.resize(0);
-    if (orientation == VERTICAL)
-        for (unsigned int y_c = y; y_c - y < word.size(); y_c++)
+    if (move.orientation == VERTICAL)
+        for (unsigned int y_c = move.y; y_c - move.y < move.word.size(); y_c++)
         {
-            if(y_c < 15 && m_letters[x][y_c] == "")
+            if(y_c < 15 && m_letters[move.x][y_c] == "")
             {
                 bool find = 0;
                 for (unsigned int i = 0; i < playersLetters.size(); i++)
                 {
-                    if(word[y_c-y] == playersLetters[i])
+                    if(move.word[y_c-move.y] == playersLetters[i])
                     {
                         find = 1;
                         neededLetters.push_back(playersLetters[i]);
@@ -422,15 +422,15 @@ std::vector <std::string> Board::unusedLetters(int x, int y, std::vector < std::
                 }
             }
         }
-    if (orientation == HORIZONTAL)
-        for (unsigned int x_c = x; x_c - x < word.size(); x_c++)
+    if (move.orientation == HORIZONTAL)
+        for (unsigned int x_c = move.x; x_c - move.x < move.word.size(); x_c++)
         {
-            if(x_c < 15 && m_letters[x_c][y] == "")
+            if(x_c < 15 && m_letters[x_c][move.y] == "")
             {
                 bool find = 0;
                 for (unsigned int i = 0; i < playersLetters.size(); i++)
                 {
-                    if(word[x_c-x] == playersLetters[i] || playersLetters[i] == "_")
+                    if(move.word[x_c-move.x] == playersLetters[i] || playersLetters[i] == "_")
                     {
                         find = 1;
                         neededLetters.push_back(playersLetters[i]);
@@ -464,6 +464,7 @@ std::vector <std::string> Board::unusedLetters(int x, int y, std::vector < std::
     return noneededLetters;
 }
 
+
 void Board::debugRANDOMBOARD()
 {
     srand(time(NULL));
@@ -490,8 +491,14 @@ void Board::debugRANDOMBOARD()
         // }
         randomword = randomwords[rand()%10];
         if (rand()%2)
-            addWord(rand()%10,rand()%10,randomword,VERTICAL,letters);
+        {
+            Move move {rand()%10,rand()%10,VERTICAL,randomword,0};
+            addWord(move,letters);
+        }
         else
-            addWord(rand()%10,rand()%10,randomword,HORIZONTAL,letters);
+        {
+            Move move {rand()%10,rand()%10,HORIZONTAL,randomword,0};
+            addWord(move,letters);
+        }
     }
 }

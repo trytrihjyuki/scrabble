@@ -31,6 +31,14 @@
 #define CORRECTWORD 7
 #define CORRECTWORD50BONUS 8
 
+struct Move
+{
+    int x;
+    int y;
+    bool orientation;
+    std::vector <std::string> word;
+    int score;
+};
 
 class Board
 {
@@ -42,17 +50,17 @@ public:
 
     bool checkTilePress(int x, int y, sf::Vector2i mousePosition);
 
-    std::pair <int, std::vector <int> > checkWord(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters);
+    std::pair <int, std::vector <int> > checkWord(Move move, std::vector < std::string > playersLetters);
 
-    int addWord(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters);
+    int addWord(Move move, std::vector < std::string > playersLetters);
 
-    int countScore(int x, int y, std::vector < std::string > word, bool orientation, std::vector <int> blanks);
+    int countScore(Move move, std::vector <int> blanks);
 
-    std::vector <std::string> unusedLetters(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters);
+    std::vector <std::string> unusedLetters(Move move, std::vector < std::string > playersLetters);
     void debugRANDOMBOARD();
 
 private:
-    std::pair < bool, std::pair < int, std::vector <int> > > checkCorrectness(int x, int y, std::vector < std::string > word, bool orientation, std::vector < std::string > playersLetters);
+    std::pair < bool, std::pair < int, std::vector <int> > > checkCorrectness(Move move, std::vector < std::string > playersLetters);
 
     void getNewWord(int x, int y, bool orientation, std::vector < std::string >* newWords);
 

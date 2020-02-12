@@ -44,8 +44,6 @@ public:
     void setRandomLetters(std::vector < std::string >* letterBag, int n);
 
     void setLetter(std::string letter);
-
-    void makeBestMove();
 private:
     std::string m_name;
     int m_nameLength;
