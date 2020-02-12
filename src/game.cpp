@@ -156,6 +156,66 @@ void Game::draw()
     m_window->display();
 }
 
+void Game::makeMove(Player* player, Move move)
+{
+    std::vector <std::string> lettersLeft = m_board->unusedLetters(move,player->getLetters());
+    int madeScore = m_board->addWord(move,player->getLetters());
+
+    if (madeScore != -1) /* Succesfull added Word with non zero score */
+    {
+        printf("[+] Adding word on board, players didn't used these letters:\n");
+        for (auto letter: lettersLeft) printf("%s ",letter.c_str());
+        /* Adding new letters */
+        player->setRandomLetters(&m_letterBag,std::min(player->getLetters().size() - lettersLeft.size(), m_letterBag.size()));
+        for (auto letter: lettersLeft) player->setLetter(letter);
+
+        player->setScore( player->getScore() + madeScore);
+        m_scoreTable[m_turn][1]->updateText(std::to_string(player->getScore()));
+        nextTurn();
+    }
+}
+
+void Game::changeSelectedLetters(Player* player)
+{
+    std::vector <std::string> lettersToChange; lettersToChange.resize(0);
+    std::vector <std::string> lettersToSave; lettersToSave.resize(0);
+    for (unsigned int  i = 0; i < m_activePlayerTiles.size(); i++)
+    {
+        if (m_selectedLetters[i]) lettersToChange.push_back(player->getLetters()[i]);
+        else lettersToSave.push_back(player->getLetters()[i]);
+    }
+    if (lettersToChange.size() > m_letterBag.size()) 
+    {
+        printf("[-] Not enough letters in letterbag. Can't change it.\n");
+        m_selectingLetters = 0;
+    }
+    else
+    {
+        printf("[+] Changing this letters:\n");
+        for (auto letter: lettersToChange) printf("%s ",letter.c_str());
+        player->setRandomLetters(&m_letterBag,(int)lettersToChange.size());
+        for (auto letter: lettersToChange) m_letterBag.push_back(letter);
+        for (auto letter: lettersToSave) player->setLetter(letter);
+        nextTurn();
+    }
+}
+
+void Game::makeBestMove(Player* player)
+{
+    printf("[+] Doing best move.\n");
+    Move bestMove = m_board->getBestMove(player->getLetters());
+    /* Bad letters */
+    if (bestMove.score <= 18 && m_letterBag.size() >= 4)
+    {
+        for (int i = 0; i < 4; i++) m_selectedLetters[i] = 1;
+        changeSelectedLetters(player);
+    }
+    else
+    {
+
+    }
+}
+
 void Game::nextTurn()
 {
     printf("\n[+] NEXT TURN!\n");
@@ -175,7 +235,7 @@ void Game::nextTurn()
     /* Computers turn */
     if (!activePlayer->getHuman())
     {
-        // activePlayer->makeBestMove();
+        makeBestMove(activePlayer);
         nextTurn();
     }
 }
@@ -241,31 +301,7 @@ void Game::processEvents()
             {
                 m_selectingLetters = !m_selectingLetters;
                 if (m_selectingLetters) printf("[+] Start changing letters.\n");
-                else
-                {
-                    std::vector <std::string> lettersToChange; lettersToChange.resize(0);
-                    std::vector <std::string> lettersToSave; lettersToSave.resize(0);
-                    for (unsigned int  i = 0; i < m_activePlayerTiles.size(); i++)
-                    {
-                        if (m_selectedLetters[i]) lettersToChange.push_back(m_players[m_turn]->getLetters()[i]);
-                        else lettersToSave.push_back(m_players[m_turn]->getLetters()[i]);
-                    }
-                    if (lettersToChange.size() > m_letterBag.size()) 
-                    {
-                        printf("[-] Not enough letters in letterbag. Can't change it.\n");
-                        m_selectingLetters = 0;
-                        break;
-                    }
-                    else
-                    {
-                        printf("[+] Changing this letters:\n");
-                        for (auto letter: lettersToChange) printf("%s ",letter.c_str());
-                        m_players[m_turn]->setRandomLetters(&m_letterBag,(int)lettersToChange.size());
-                        for (auto letter: lettersToChange) m_letterBag.push_back(letter);
-                        for (auto letter: lettersToSave) m_players[m_turn]->setLetter(letter);
-                        nextTurn();
-                    }
-                }
+                else changeSelectedLetters(m_players[m_turn]);
             }
             if (m_selectingLetters)
             {
@@ -314,21 +350,7 @@ void Game::processEvents()
                 }
 
                 Move move {clickedTiles[0].first, clickedTiles[0].second, m_enterOrientation, addedWord};
-                std::vector <std::string> lettersLeft = m_board->unusedLetters(move,m_players[m_turn]->getLetters());
-                int madeScore = m_board->addWord(move,m_players[m_turn]->getLetters());
-
-                if (madeScore != -1) /* Succesfull added Word with non zero score */
-                {
-                    printf("[+] Adding word on board, players didn't used these letters:\n");
-                    for (auto letter: lettersLeft) printf("%s ",letter.c_str());
-                    /* Adding new letters */
-                    m_players[m_turn]->setRandomLetters(&m_letterBag,std::min(m_players[m_turn]->getLetters().size() - lettersLeft.size(), m_letterBag.size()));
-                    for (auto letter: lettersLeft) m_players[m_turn]->setLetter(letter);
-
-                    m_players[m_turn]->setScore( m_players[m_turn]->getScore() + madeScore);
-                    m_scoreTable[m_turn][1]->updateText(std::to_string(m_players[m_turn]->getScore()));
-                    nextTurn();
-                }
+                makeMove(m_players[m_turn], move);
             }
         }
 

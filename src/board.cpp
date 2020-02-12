@@ -464,6 +464,10 @@ std::vector <std::string> Board::unusedLetters(Move move, std::vector < std::str
     return noneededLetters;
 }
 
+Move Board::getBestMove(std::vector < std::string > playersLetters)
+{
+
+}
 
 void Board::debugRANDOMBOARD()
 {

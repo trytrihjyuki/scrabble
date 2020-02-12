@@ -23,9 +23,15 @@ public:
 private:
     void draw();
 
-    void nextTurn();
-
     void processEvents();
+
+    void changeSelectedLetters(Player* player);
+
+    void makeMove(Player* player, Move move);
+
+    void makeBestMove(Player* player);
+
+    void nextTurn();
 
     sf::RenderWindow* m_window;
 

@@ -57,6 +57,9 @@ public:
     int countScore(Move move, std::vector <int> blanks);
 
     std::vector <std::string> unusedLetters(Move move, std::vector < std::string > playersLetters);
+
+    Move getBestMove(std::vector < std::string > playersLetters);
+
     void debugRANDOMBOARD();
 
 private:
