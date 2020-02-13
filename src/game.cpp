@@ -223,11 +223,11 @@ void Game::changeSelectedLetters(Player* player)
 
 void Game::makeBestMove(Player* player)
 {
-    printf("[+] Doing best move.\n");
+    printf("[+] %s is doing best move.\n",m_players[m_turn]->getName().c_str());
     Move bestMove = m_board->getBestMove(player->getLetters());
     if (m_letterBag.size() == 0 && bestMove.score <= 1)
     {
-        printf("[+] Computer is skipping turn.\n");
+        printf("[+] %s is skipping turn.\n",m_players[m_turn]->getName().c_str());
         m_skipRow++;
         nextTurn();
         return;

@@ -48,7 +48,7 @@ void Textbox::updateText(std::string text)
     m_text.setFillColor(sf::Color(255, 242, 230));
 
     sf::FloatRect textRect = m_text.getLocalBounds();
-    m_text.setOrigin(textRect.left + textRect.width / 2.0f,0);
+    m_text.setOrigin(textRect.left + textRect.width / 2.f,0);
     m_text.setPosition(sf::Vector2f((m_position.x + m_size.x/2.f), m_position.y + m_size.y / 5.f));
 }
 

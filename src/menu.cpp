@@ -186,6 +186,7 @@ void Menu::processEvents()
                     game = new Game(m_window, m_players);
                     game->run();
                     printf("[+] Ending game\n");
+                    for (int i = 0; i < 4; i++) m_players[i]->setScore(0);
                     delete game;
                     return;
                 }
