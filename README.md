@@ -26,9 +26,7 @@ make
 - Change name of players, set who is playing (computer/friend)
 - Start game 
 - Players turn:
-  - Use this button to skip your turn:
-   ![alt test](static/skip_button_small.png)
-  - Click this button and then click letters you want to replace in case you change your mind click Esc:
-   ![alt test](static/change_button_small.png)
+  - Use this button ![alt test](static/skip_button_small.png) to skip your turn.
+  - Click this button ![alt test](static/change_button_small.png) and then click letters you want to replace in case you change your mind click Esc.
   - Click dark green bar and then type word you want to put on a board. Specify if word should be placed horizontally or vertically and click field on board where should it starts. 
   
