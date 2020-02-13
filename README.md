@@ -29,4 +29,9 @@ make
   - Use this button ![alt test](static/skip_button_small.png) to skip your turn.
   - Click this button ![alt test](static/change_button_small.png) and then click letters you want to replace in case you change your mind click Esc.
   - Click dark green bar and then type word you want to put on a board. Specify if word should be placed horizontally or vertically and click field on board where should it starts. 
-  
+
+## Screenshots
+  ![alt test](static/screen_1.png)
+  ![alt test](static/screen_2.png)
+  ![alt test](static/screen_3.png)
+
