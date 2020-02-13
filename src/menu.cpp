@@ -21,8 +21,11 @@ Menu::Menu(size_t width, size_t height)
         m_players[i] = new Player("PLAYER "+std::to_string(i));
         m_playersButtons[i][0] = new Button(sf::Vector2f(m_window->getSize().x / 4.9f, m_window->getSize().y / 4.f + i*119), sf::Vector2i(400, 75.f), m_players[i]->getName(),50);
         m_playersButtons[i][1] = new Button(sf::Vector2f(m_window->getSize().x / 2.f, m_window->getSize().y / 4.f + i*120), sf::Vector2i(346, 100), m_players[i]->getName(),0);
+        m_playersButtons[i][2] = new Button(sf::Vector2f(m_window->getSize().x / 14.f, m_window->getSize().y / 4.f + i*119), sf::Vector2i(100, 75), "ON",50);
         m_playersButtons[i][1]->setImage("static/human_button.png");
     }
+    m_activePlayersNum = 4;
+
     m_exitOptionButton = new Button(sf::Vector2f(m_window->getSize().x / 2 - 150, m_window->getSize().y / 1.7f + 200 - 50), sf::Vector2i(300, 75.f), "GO BACK",40);
 
     m_titleOptions = new Textbox(sf::Vector2f(sf::Vector2f(m_window->getSize().x / 2.5f, m_window->getSize().y / 7.f)), sf::Vector2i(300, 75.f), "SET PLAYERS NAMES AND TYPES",50);
@@ -61,8 +64,10 @@ void Menu::draw()
         m_window->draw(*m_exitOptionButton->getTextPointer());
         for (int i = 0; i < 4; i++){
             if (m_playersButtons[i][0]->isHover() || m_playersButtons[i][0]->isPressed()) m_window->draw(*m_playersButtons[i][0]->getBackgroundPointer());
+            if (m_playersButtons[i][2]->isHover()) m_window->draw(*m_playersButtons[i][2]->getBackgroundPointer());
             m_window->draw(*m_playersButtons[i][0]->getTextPointer());
             m_window->draw(*m_playersButtons[i][1]->getSpritePointer());
+            m_window->draw(*m_playersButtons[i][2]->getTextPointer());
         }
         m_window->display();
         return;
@@ -102,6 +107,7 @@ void Menu::processEvents()
         if (m_optionsActivate)
         {
             for (int i = 0; i < 4; i++) m_playersButtons[i][0]->updateHover(sf::Mouse::getPosition(*m_window));
+            for (int i = 0; i < 4; i++) m_playersButtons[i][2]->updateHover(sf::Mouse::getPosition(*m_window));
             m_exitOptionButton->updateHover(sf::Mouse::getPosition(*m_window));
             if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
             {
@@ -112,12 +118,32 @@ void Menu::processEvents()
                 for (int i = 0; i < 4; i++){
                     m_playersButtons[i][0]->updatePress(sf::Mouse::getPosition(*m_window), true);
                     m_playersButtons[i][1]->updatePress(sf::Mouse::getPosition(*m_window), true);
+                    m_playersButtons[i][2]->updatePress(sf::Mouse::getPosition(*m_window), true);
                     if (m_playersButtons[i][0]->isPressed()) printf("[+] Clicked player %d\n",i);
                     if (m_playersButtons[i][1]->isPressed()){
                         printf("[+] Clicked switchbox player no. %d\n",i);
                         if (m_players[i]->getHuman()) m_playersButtons[i][1]->setImage("static/computer_button.png");
                         else m_playersButtons[i][1]->setImage("static/human_button.png");
                         m_players[i]->setHuman(!m_players[i]->getHuman());
+                    }
+                    if (m_playersButtons[i][2]->isPressed())
+                    {
+                        printf("[+] Change activity of player no. %d\n",i);
+                        if (m_players[i]->getActivate())
+                        {
+                            if (m_activePlayersNum > 1)
+                            {
+                                m_players[i]->setActivate(0);
+                                m_playersButtons[i][2]->updateText("OFF");
+                                m_activePlayersNum--;
+                            }
+                        }
+                        else
+                        {
+                            m_players[i]->setActivate(1);
+                            m_playersButtons[i][2]->updateText("ON");
+                            m_activePlayersNum++;
+                        }
                     }
                 }
             }
@@ -156,6 +182,7 @@ void Menu::processEvents()
                 if (m_startButton->isPressed())
                 {
                     printf("[+] Starting game\n");
+                    vector <Player*> activePlayers;
                     game = new Game(m_window, m_players);
                     game->run();
                     printf("[+] Ending game\n");

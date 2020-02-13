@@ -42,11 +42,12 @@ private:
     sf::Sprite m_logoSprite;
 
     //Option vars
-    Button* m_playersButtons[4][2]; //[0] - name buton [1] - switch box
+    Button* m_playersButtons[4][3]; //[0] - name buton [1] - switch box [2] activate
     Player* m_players[4];
     Button* m_exitOptionButton;
     Textbox* m_titleOptions;
 
+    int m_activePlayersNum;
 
     bool m_exitMenu;
     bool m_optionsActivate;

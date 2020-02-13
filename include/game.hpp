@@ -33,6 +33,8 @@ private:
 
     void nextTurn();
 
+    void gameOver();
+
     sf::RenderWindow* m_window;
 
     std::vector < Player* > m_players;
@@ -68,9 +70,14 @@ private:
     bool m_exitGame;
     bool m_endGame;
 
+    Textbox* m_winnerHeader;
+    Button* m_backToMenuButton;
+
     int m_playersNumber;
 
     int m_turn;
+
+    int m_skipRow;
 };
 
 std::string UnicodeToUTF8(unsigned int codepoint);

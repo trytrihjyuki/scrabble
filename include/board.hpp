@@ -71,12 +71,11 @@ public:
 
     Move getBestMove(std::vector < std::string > playersLetters);
 
-    void debugRANDOMBOARD();
-
+    int summLetters(std::vector <std::string> letters);
 private:
     std::pair < bool, std::pair < int, std::vector <int> > > checkCorrectness(Move move, std::vector < std::string > playersLetters);
 
-    void getNewWord(int x, int y, bool orientation, std::vector < WordOnBoard >* newWords);
+    void getNewWord(int x, int y, bool orientation, std::vector < WordOnBoard >* newWords, bool newWordFlag);
 
     sf::Texture m_boardTexture;
     sf::Sprite m_boardSprite;
