@@ -126,7 +126,9 @@ void Game::draw()
 {
     /* Draw board and BG */
     m_window->clear(sf::Color(0, 99, 64));
+    m_board->drawWordHover(m_window,m_wordP);
     m_board->draw(m_window);
+
 
     /* Draw score table */
     m_window->draw(*m_scoreHeader->getTextPointer());
@@ -258,7 +260,7 @@ void Game::nextTurn()
     m_activePlayerName->updateText(activePlayer->getName());
     std::vector < std::string > activePlayerLetters = activePlayer->getLetters();
     for (unsigned int i = 0; i < activePlayerLetters.size(); i++) m_activePlayerTiles[i]->setImage(std::string("static/letters/pl/") + activePlayerLetters[i] + ".png");
-    for (unsigned int i = 0; i < m_activePlayerTiles.size(); i++) m_selectedLetters[i] = 0;
+    for (unsigned int i = 0; i < m_activePlayerTiles.size(); i++) {m_activePlayerTiles[i]->setSpriteColor(sf::Color(255,255,255)); m_selectedLetters[i] = 0;}
     m_selectingLetters = 0;
     draw();
     m_enterWordButton->updateText("WORD");
@@ -307,6 +309,25 @@ void Game::processEvents()
                 if (!m_selectingLetters) m_activePlayerTiles[i]->setSpriteColor(sf::Color(255,255,255));
                 if (m_selectingLetters && m_activePlayerTiles[i]->isHover()) m_activePlayerTiles[i]->setSpriteColor(sf::Color(0,180,90));
                 if (m_selectingLetters && !m_activePlayerTiles[i]->isHover() && !m_selectedLetters[i]) m_activePlayerTiles[i]->setSpriteColor(sf::Color(255,255,255));
+            }
+            /* Prediction word on board */
+            std::vector < std::pair <int, int> > hoveredTiles; hoveredTiles.resize(0);
+            for(int x=0; x<15; x++)
+            {
+                for(int y=0; y<15; y++)
+                {
+                    if (m_board->checkTilePress(x,y,sf::Mouse::getPosition(*m_window))) hoveredTiles.push_back({x,y});
+                }
+            }
+            /* Only enter word if specific hovered */
+            if (hoveredTiles.size() == 1)
+            {
+                WordOnBoard wordP {hoveredTiles[0].first, hoveredTiles[0].second, m_enterOrientation, m_enterWord};
+                m_wordP = wordP;
+            }
+            else
+            {
+                m_wordP.x = -1;
             }
             /* Mouse handle */
             if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)

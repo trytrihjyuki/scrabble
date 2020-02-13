@@ -42,6 +42,8 @@ private:
     Textbox* m_boardLetters[15][15];
     Board* m_board;
 
+    WordOnBoard m_wordP;
+
     std::vector < std::string > m_letterBag;
 
     Textbox* m_scoreHeader;

@@ -75,14 +75,43 @@ Board::~Board()
 
 }
 
-void Board::draw(sf::RenderWindow* window)
+void Board::drawWordHover(sf::RenderWindow* window, WordOnBoard word)
 {
     /* Drawing board and letters on it */
     window->draw(m_boardSprite);
 
+    std::vector <std::string> wordV;
+    wordV = convertString(word.word);
+    /* No word Hover */
+    if (word.x == -1) return;
+    if (word.orientation == VERTICAL)
+        for (int y_c = word.y; y_c < std::min(word.y + (int)wordV.size(),15); y_c++)
+        {
+            m_lettersTiles[word.x][y_c]->setImage(std::string("static/letters/pl/") + wordV[y_c-word.y] + ".png");
+            m_lettersTiles[word.x][y_c]->setSpriteColor(sf::Color(125,125,126));
+            window->draw(*m_lettersTiles[word.x][y_c]->getSpritePointer());
+        }
+    else
+        for (int x_c = word.x; x_c < std::min(word.x + (int)wordV.size(),15); x_c++)
+        {
+            m_lettersTiles[x_c][word.y]->setImage(std::string("static/letters/pl/") + wordV[x_c-word.x] + ".png");
+            m_lettersTiles[x_c][word.y]->setSpriteColor(sf::Color(125,125,126));
+            window->draw(*m_lettersTiles[x_c][word.y]->getSpritePointer());
+        }
+}
+
+void Board::draw(sf::RenderWindow* window)
+{
     for (int x = 0; x < 15; x++)
         for (int y = 0; y < 15; y++)
-            if (m_lettersTiles[x][y]) window->draw(*m_lettersTiles[x][y]->getSpritePointer());
+            if (m_lettersTiles[x][y] && m_letters[x][y] != "")
+            {
+                /* Clean up */
+                m_lettersTiles[x][y]->setImage(std::string("static/letters/pl/") + m_letters[x][y] + ".png");
+                m_lettersTiles[x][y]->setSpriteColor(sf::Color(255,255,255));
+
+                window->draw(*m_lettersTiles[x][y]->getSpritePointer());
+            }
 }
 
 bool Board::checkTilePress(int x, int y, sf::Vector2i mousePosition)
@@ -456,12 +485,13 @@ void Board::getNewWord(int x, int y, bool orientation, std::vector <WordOnBoard>
     /* Getting all new words */
     if (newWordFlag)
     {
-        newWords->push_back(newWord);
-        if (prefix.size() + sufix.size() == 1)
+        /* Do not duplicate new words */
+        bool flag = 1;
+        for (unsigned int i = 0; i < newWords->size(); i++)
         {
-            newWord.orientation = !newWord.orientation;
-            newWords->push_back(newWord);
+            if ((*newWords)[i].x == newWord.x && (*newWords)[i].y == newWord.y && (*newWords)[i].orientation == newWord.orientation && (*newWords)[i].word == newWord.word) flag = 0;
         }
+        if (flag) newWords->push_back(newWord);
     }
 }
 
@@ -555,6 +585,7 @@ Move Board::getBestMove(std::vector < std::string > playersLetters)
         m_allWords.push_back(temp);
     }
 
+    int counter = 0;
     /* Brute force ;) */
     int numLetters = playersLetters.size();
     for (unsigned int it = 0; it < m_allWords.size(); it++)
@@ -604,6 +635,8 @@ Move Board::getBestMove(std::vector < std::string > playersLetters)
                                             for (unsigned int t = 0; t < candidate.word.size(); t++)
                                                 if (candidate.word[t] == "_") candidate.word[t] = letterNoBlank2;
                                             candidate.score = checkWord(candidate, usedLetters).first;
+                                            counter++;
+                                            if(counter%50000 == 0) printf("[+] Bruting. Tried %d words. Best current score is %d.\n",counter, bestMove.score);
                                             if(candidate.score > bestMove.score) bestMove = candidate;
                                         }
                                     }
@@ -613,6 +646,8 @@ Move Board::getBestMove(std::vector < std::string > playersLetters)
                                 {
                                     candidate.score = checkWord(candidate, usedLetters).first;
                                     if(candidate.score > bestMove.score) bestMove = candidate;
+                                    counter++;
+                                    if(counter%50000 == 0) printf("[+] Bruting. Tried %d words. Best current score is %d.\n",counter, bestMove.score);
                                 }
                             }
                         }
@@ -622,6 +657,8 @@ Move Board::getBestMove(std::vector < std::string > playersLetters)
                     {
                         candidate.score = checkWord(candidate, usedLetters).first;
                         if(candidate.score > bestMove.score) bestMove = candidate;
+                        counter++;
+                        if(counter%50000 == 0) printf("[+] Bruting. Tried %d words. Best current score is %d.\n",counter, bestMove.score);
                     }
                 }
             } while (std::next_permutation(usedLetters.begin(), usedLetters.end()));

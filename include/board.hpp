@@ -17,7 +17,7 @@
 #include"button.hpp"
 
 /* Do not output debug when bruting */
-#define NOBRUT if(!m_makingBestMove)
+#define NOBRUT if(!m_makingBestMove || m_addingWord)
 
 /* Orientation */
 #define VERTICAL 1
@@ -58,6 +58,8 @@ public:
     ~Board();
 
     void draw(sf::RenderWindow* window);
+
+    void drawWordHover(sf::RenderWindow* window, WordOnBoard word);
 
     bool checkTilePress(int x, int y, sf::Vector2i mousePosition);
 
